@@ -18,9 +18,7 @@ class SplashFragment : BaseFragment<SplashFragmentBinding>(SplashFragmentBinding
 
 
     override fun initFragment(layoutInflater: LayoutInflater, viewGroup: ViewGroup?) {
-        init()
-    }
-    private fun init(){
+
         binding.apply {
             ivLogo.setAnim(LOGO_ANIM_DURATION,anim.logo_anim)
         }
@@ -30,4 +28,5 @@ class SplashFragment : BaseFragment<SplashFragmentBinding>(SplashFragmentBinding
             findNavController().navigate(R.id.action_splashFragment_to_moviesFragment)
         }
     }
+
 }
