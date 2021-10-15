@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
+import com.example.movieapp.util.Inflate
 
-typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
 
 abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) : Fragment() {
 
@@ -20,11 +20,11 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) 
         savedInstanceState: Bundle?
     ): View? {
         _binding = inflate.invoke(layoutInflater, container, false)
-        onStart(layoutInflater, container)
+        initFragment(layoutInflater, container)
         return binding.root
     }
 
-    abstract fun onStart(layoutInflater: LayoutInflater, viewGroup: ViewGroup?)
+    abstract fun initFragment(layoutInflater: LayoutInflater, viewGroup: ViewGroup?)
 
     override fun onDestroyView() {
         super.onDestroyView()

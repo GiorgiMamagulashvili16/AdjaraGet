@@ -11,7 +11,8 @@ import com.example.movieapp.databinding.MoviesFragmentBinding
 import com.example.movieapp.presentation.base.BaseFragment
 
 class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding::inflate){
-    override fun onStart(layoutInflater: LayoutInflater, viewGroup: ViewGroup?) {
+
+    override fun initFragment(layoutInflater: LayoutInflater, viewGroup: ViewGroup?) {
         init()
     }
     private fun init(){
