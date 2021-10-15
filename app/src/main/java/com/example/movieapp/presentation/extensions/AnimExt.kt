@@ -9,7 +9,6 @@ import com.example.movieapp.anim
 fun View.setAnim(time:Long, animation:Int){
     val anim = AnimationUtils.loadAnimation(context, animation).apply {
         duration = time
-        interpolator = BounceInterpolator()
     }
     startAnimation(anim)
 }
