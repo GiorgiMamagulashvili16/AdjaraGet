@@ -2,6 +2,7 @@ package com.example.movieapp.presentation.splash_screen
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.movieapp.R
@@ -19,10 +20,10 @@ class SplashFragment : BaseFragment<SplashFragmentBinding>(SplashFragmentBinding
 
     override fun initFragment(layoutInflater: LayoutInflater, viewGroup: ViewGroup?) {
 
+        (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         binding.apply {
             ivLogo.setAnim(LOGO_ANIM_DURATION,anim.logo_anim)
         }
-
         lifecycleScope.launch {
             delay(SPLASH_DELAY_TIME)
             findNavController().navigate(R.id.action_splashFragment_to_moviesFragment)

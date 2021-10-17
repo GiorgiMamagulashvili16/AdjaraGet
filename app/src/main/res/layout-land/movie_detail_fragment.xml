@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorPrimary">
+
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivPoster"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="30dp"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/logo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.8"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/poster_bg"
+        app:layout_constraintWidth_percent="0.5" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/ibBack"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_margin="25dp"
+        android:background="@android:color/transparent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/back_arrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/landscape_detail_view_radius"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.9"
+        app:layout_constraintStart_toEndOf="@id/ivPoster"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:fontFamily="@font/rubik_semi_bold"
+        android:text="@string/title"
+        android:textColor="?attr/colorPrimaryVariant"
+        android:textSize="21sp"
+        app:layout_constraintStart_toStartOf="@id/view"
+        app:layout_constraintTop_toTopOf="@id/view" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvOriginalTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/original_title"
+        android:textColor="?attr/colorPrimaryVariant"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@id/tvTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvReleaseDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="17dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/release_date"
+        android:textColor="?attr/colorPrimaryVariant"
+        android:textSize="17sp"
+        app:layout_constraintStart_toStartOf="@id/view"
+        app:layout_constraintTop_toBottomOf="@id/tvOriginalTitle" />
+
+    <androidx.appcompat.widget.AppCompatRatingBar
+        android:id="@+id/rbMovieRating"
+        style="?attr/ratingBarStyleSmall"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="5dp"
+        android:isIndicator="true"
+        android:progressBackgroundTint="@color/gray"
+        android:progressTint="@color/orange"
+        android:rating="3.0"
+        app:layout_constraintEnd_toEndOf="@id/view"
+        app:layout_constraintTop_toTopOf="@id/view" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvGenres"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:padding="5dp"
+        app:layout_constraintEnd_toEndOf="@id/view"
+        app:layout_constraintStart_toStartOf="@id/view"
+        app:layout_constraintTop_toBottomOf="@id/tvReleaseDate" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvOverview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@font/rubik_semi_bold"
+        android:padding="5dp"
+        android:text="@string/overview"
+        android:textColor="?attr/colorPrimaryVariant"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="@id/view"
+        app:layout_constraintStart_toStartOf="@id/view"
+        app:layout_constraintTop_toBottomOf="@id/rvGenres" />
+</androidx.constraintlayout.widget.ConstraintLayout>

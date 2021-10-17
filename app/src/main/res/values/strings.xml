@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">MovieApp</string>
+    <string name="movies">Movies</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="popular">Popular</string>
+    <string name="saved">Saved</string>
+    <string name="original_title">Original Title</string>
+    <string name="title">Title</string>
+    <string name="release_date">Release Date</string>
+    <string name="overview">OverView</string>
 </resources>
