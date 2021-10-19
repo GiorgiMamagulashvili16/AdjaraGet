@@ -1,14 +1,13 @@
 package com.example.movieapp.presentation.movies_fragment
 
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.movieapp.R
 import com.example.movieapp.databinding.MoviesFragmentBinding
 import com.example.movieapp.presentation.base.BaseFragment
 import com.example.movieapp.presentation.movies_screen.ChipState
+import com.example.movieapp.presentation.movies_screen.TopRatedMoviesViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -23,7 +22,7 @@ class TopRatedMoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmen
     }
 
     private fun setListeners() {
-        binding.toolbar.setOnClickListener {
+        binding.toolbar.root.setOnClickListener {
             findNavController().navigate(R.id.action_moviesFragment_to_movieDetailFragment)
         }
     }

@@ -27,7 +27,7 @@ class PopularMoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragment
     }
 
     private fun setListeners() {
-        binding.toolbar.setOnClickListener {
+        binding.toolbar.root.setOnClickListener {
             findNavController().navigate(R.id.action_movies_fragment_to_movieDetailFragment)
         }
     }
