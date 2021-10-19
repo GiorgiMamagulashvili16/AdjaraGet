@@ -68,6 +68,7 @@
         android:visibility="gone"
         app:checkedChip="@+id/chpTopRated"
         app:layout_constraintEnd_toEndOf="parent"
+        app:selectionRequired="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/appBarLayout"
         app:singleSelection="true">

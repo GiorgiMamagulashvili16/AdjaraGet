@@ -16,16 +16,16 @@ class GenresAdapter : ListAdapter<Genre, GenresAdapter.VH>(COMPARATOR) {
         )
     )
 
-    override fun onBindViewHolder(holder: VH, position: Int) = holder.onBind()
+    override fun onBindViewHolder(holder: VH, position: Int) = holder.onBind(getItem(position))
 
 
-    inner class VH(val binding: RowChipItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        lateinit var genre: Genre
-        fun onBind() {
-            genre = getItem(adapterPosition)
+    class VH(val binding: RowChipItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun onBind(genre: Genre) {
+
             binding.root.text = genre.name
         }
     }
+
 
     object COMPARATOR : DiffUtil.ItemCallback<Genre>() {
         override fun areItemsTheSame(oldItem: Genre, newItem: Genre): Boolean {
