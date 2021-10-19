@@ -20,14 +20,17 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) 
         savedInstanceState: Bundle?
     ): View? {
         _binding = inflate.invoke(layoutInflater, container, false)
-        initFragment(layoutInflater, container)
         return binding.root
     }
 
-    abstract fun initFragment(layoutInflater: LayoutInflater, viewGroup: ViewGroup?)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initFragment()
+    }
+    abstract fun initFragment()
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onDestroy() {
+        super.onDestroy()
         _binding = null
     }
 }
