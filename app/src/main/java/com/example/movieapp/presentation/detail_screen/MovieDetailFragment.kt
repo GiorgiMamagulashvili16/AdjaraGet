@@ -24,7 +24,7 @@ class MovieDetailFragment :
     private fun setListeners() {
         with(binding) {
             ibBack.setOnClickListener {
-                findNavController().navigate(R.id.action_movieDetailFragment_to_movies_fragment)
+                findNavController().navigate(R.id.action_movieDetailFragment_to_moviesFragment)
             }
             ivPoster.clipToOutline = true
         }

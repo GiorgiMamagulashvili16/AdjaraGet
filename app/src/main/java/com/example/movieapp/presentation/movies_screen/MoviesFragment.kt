@@ -1,12 +1,5 @@
 package com.example.movieapp.presentation.movies_screen
 
-import androidx.lifecycle.ViewModelProvider
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -16,9 +9,9 @@ import com.example.movieapp.presentation.base.BaseFragment
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class PopularMoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding::inflate) {
+class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding::inflate) {
 
-    private val viewModel: PopularMoviesViewModel by activityViewModels()
+    private val viewModel: MoviesViewModel by activityViewModels()
 
     override fun initFragment() {
         setChipsValue()
@@ -28,7 +21,7 @@ class PopularMoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragment
 
     private fun setListeners() {
         binding.toolbar.root.setOnClickListener {
-            findNavController().navigate(R.id.action_movies_fragment_to_movieDetailFragment)
+            findNavController().navigate(R.id.action_moviesFragment_to_movieDetailFragment)
         }
     }
 
@@ -54,6 +47,5 @@ class PopularMoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragment
                 }
             }
     }
-
 
 }
