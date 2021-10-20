@@ -44,7 +44,19 @@ class MovieDetailFragment :
         lifecycleScope.launch {
             vm.result.collectLatest { result ->
                 when (result) {
-                    is Resource.Success -> setDetailInfo(result.data!!)
+                    is Resource.Success -> {
+                        setDetailInfo(result.data!!)
+                        dismissLoadingDialog()
+                    }
+                    is Resource.Error -> {
+                        showErrorDialog(result.errorMessage!!) {
+                            vm.getMovieById(args.movieId)
+                        }
+                        dismissLoadingDialog()
+                    }
+                    is Resource.Loading -> {
+                        showLoadingDialog()
+                    }
                 }
             }
         }

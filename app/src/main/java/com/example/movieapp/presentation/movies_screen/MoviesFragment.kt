@@ -51,8 +51,9 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
 
     private fun paginate() {
         movieAdapter.isLastItem = {
-            if (it) {
+            if (it == true) {
                 currentPage++
+                d("current","$currentPage")
                 if (currentPage != totalPages)
                     viewModel.getMovies(currentPage)
             }
@@ -67,11 +68,18 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                         val result = state.data?.results!!
                         movieAdapter.insertList(result)
                         totalPages = state.data.totalPages
+                        dismissLoadingDialog()
                     } else {
                         movieAdapter.loadMore(state.data?.results!!)
+                        dismissLoadingDialog()
                     }
-                    is Resource.Error -> d("STATE", "error")
-                    is Resource.Loading -> d("STATE", "Loadign")
+                    is Resource.Error -> {
+                        showErrorDialog(state.errorMessage!!) {
+                            viewModel.getMovies(currentPage)
+                        }
+                        dismissLoadingDialog()
+                    }
+                    is Resource.Loading -> showLoadingDialog()
                 }
             }
         }

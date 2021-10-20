@@ -27,7 +27,7 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.VH>() {
         holder.binding.root.setOnClickListener {
             onPosterClick.invoke(movieList[position].id)
         }
-        if (position == movieList.size - 1) {
+        if (position == movieList.size - 2) {
             isLastItem.invoke(true)
         }
     }
