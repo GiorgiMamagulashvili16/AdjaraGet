@@ -1,6 +1,6 @@
 package com.example.movieapp.presentation.movies_screen
 
 interface SetChipState {
-    val buildVariant: ChipState
+    val buildVariantChipState: ChipState
         get() = ChipState.TopRated
 }

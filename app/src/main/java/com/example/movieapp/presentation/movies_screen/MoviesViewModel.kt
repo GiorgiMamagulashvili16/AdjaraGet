@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class MoviesViewModel : ViewModel(),SetChipState {
-    private val _chipState = MutableStateFlow<ChipState>(buildVariant)
+    private val _chipState = MutableStateFlow(buildVariantChipState)
     val chipState: StateFlow<ChipState> = _chipState
 
     fun setChipState(state: ChipState) = viewModelScope.launch {
