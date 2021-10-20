@@ -15,19 +15,19 @@ class MovieDetailFragment :
 
     private val genreAdapter: GenresAdapter by lazy { GenresAdapter() }
 
-    override fun initFragment(layoutInflater: LayoutInflater, viewGroup: ViewGroup?) {
+    override fun initFragment() {
         setListeners()
         setGenres()
         initGenreRecycle()
     }
 
     private fun setListeners() {
-        binding.apply {
+        with(binding) {
             ibBack.setOnClickListener {
                 findNavController().navigate(R.id.action_movieDetailFragment_to_moviesFragment)
             }
+            ivPoster.clipToOutline = true
         }
-        binding.ivPoster.clipToOutline = true
     }
 
     private fun initGenreRecycle() {

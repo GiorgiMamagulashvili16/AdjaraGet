@@ -24,6 +24,27 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors{
+        flavorDimensions "version"
+        topRated{
+            applicationIdSuffix ".top_rated"
+            dimension "version"
+        }
+        popular{
+            applicationIdSuffix ".popular"
+            dimension "version"
+        }
+    }
+    sourceSets{
+        topRated{
+            java.srcDirs = ['src/top_rated/java']
+            res.srcDirs = ['src/top_rated/res']
+        }
+        popular{
+            java.srcDirs = ['src/popular/java']
+            res.srcDirs = ['src/popular/res']
+        }
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
