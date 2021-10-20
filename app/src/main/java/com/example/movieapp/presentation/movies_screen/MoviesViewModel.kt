@@ -21,6 +21,13 @@ class MoviesViewModel @Inject constructor(
     private val _chipState = MutableStateFlow<ChipState>(buildVariantChipState)
     val chipState: StateFlow<ChipState> = _chipState
 
+    private val _isLandscape = MutableStateFlow<Boolean>(false)
+    val isLandscape: StateFlow<Boolean> = _isLandscape
+
+    fun isLandScape(state: Boolean) = viewModelScope.launch {
+        _isLandscape.value = state
+    }
+
     fun setChipState(state: ChipState) = viewModelScope.launch {
         _chipState.value = state
     }

@@ -1,5 +1,7 @@
 package com.example.movieapp.presentation.movies_screen
 
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.util.Log.d
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
@@ -7,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.movieapp.BuildConfig
 import com.example.movieapp.R
 import com.example.movieapp.databinding.MoviesFragmentBinding
 import com.example.movieapp.models.Movie
@@ -25,10 +28,11 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
 
     private val movieAdapter by lazy { MovieAdapter() }
     private var currentPage = 1
-    private var totalPages: Int= 0
-    private var isFirstLoad = true
+    private var totalPages: Int = 0
+    private var isLandscapeMode: Boolean = false
 
     override fun initFragment() {
+        getScreenOrientationInfo()
         setChipsValue()
         chipSelect()
         setListeners()
@@ -36,14 +40,20 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
         observeResult()
         paginate()
         viewModel.getMovies(currentPage)
+
+    }
+
+    private fun getScreenOrientationInfo() {
+        val orientation = requireActivity().resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+            isLandscapeMode = true
     }
 
     private fun paginate() {
         movieAdapter.isLastItem = {
             if (it) {
-                isFirstLoad = false
                 currentPage++
-                if ( currentPage != totalPages)
+                if (currentPage != totalPages)
                     viewModel.getMovies(currentPage)
             }
         }
@@ -69,15 +79,21 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
 
     private fun initRecycleView() {
         binding.rvMovies.apply {
-            layoutManager = GridLayoutManager(requireContext(), 2)
+            layoutManager =
+                if (isLandscapeMode) GridLayoutManager(requireContext(), 3) else GridLayoutManager(
+                    requireContext(),
+                    2
+                )
+
             adapter = movieAdapter
 
         }
     }
 
     private fun setListeners() {
-        binding.toolbar.root.setOnClickListener {
-//            findNavController().navigate(R.id.action_moviesFragment_to_movieDetailFragment)
+        movieAdapter.onPosterClick = { id ->
+            val action = MoviesFragmentDirections.actionMoviesFragmentToMovieDetailFragment(id)
+            findNavController().navigate(action)
         }
     }
 

@@ -3,6 +3,7 @@ package com.example.movieapp.repositories
 import android.util.Log.d
 import com.example.movieapp.models.Error
 import com.example.movieapp.models.Movie
+import com.example.movieapp.models.MovieDetailResponse
 import com.example.movieapp.models.MovieResponse
 import com.example.movieapp.network.MovieService
 import com.example.movieapp.util.Resource
@@ -37,6 +38,24 @@ class MovieRepositoryImpl @Inject constructor(
         withContext(Dispatchers.IO) {
             return@withContext try {
                 val response = service.getPopularMovies(page)
+                if (response.isSuccessful) {
+                    val body = response.body()!!
+                    d("STATEB", "$body")
+                    Resource.Success(body)
+                } else {
+                    val errorBody =
+                        Gson().fromJson(response.errorBody()!!.toString(), Error::class.java)
+                    Resource.Error(errorBody.statusMessage)
+                }
+            } catch (e: HttpException) {
+                Resource.Error(e.message!!)
+            }
+        }
+
+    override suspend fun getMovieById(movieId: Int): Resource<MovieDetailResponse> =
+        withContext(Dispatchers.IO) {
+            return@withContext try {
+                val response = service.getMovieById(movieId = movieId)
                 if (response.isSuccessful) {
                     val body = response.body()!!
                     d("STATEB", "$body")

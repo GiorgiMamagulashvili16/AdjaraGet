@@ -46,7 +46,7 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.VH>() {
         RecyclerView.ViewHolder(binding.root) {
         fun onBind(movie: Movie) {
             with(binding) {
-                root.clipToOutline = true
+                root
                 root.loadImage(IMAGE_URL + movie.poster_path)
             }
         }

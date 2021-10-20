@@ -52,7 +52,7 @@
         android:gravity="center"
         android:text="@string/title"
         android:textColor="?attr/colorPrimaryVariant"
-        android:textSize="16sp"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="@id/view"
         app:layout_constraintTop_toTopOf="@id/view" />
 
@@ -93,6 +93,17 @@
         app:layout_constraintEnd_toEndOf="@id/view"
         app:layout_constraintTop_toTopOf="@id/view" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/rubik_semi_bold"
+        android:textColor="?attr/colorPrimaryVariant"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@id/rbMovieRating"
+        app:layout_constraintStart_toStartOf="@id/rbMovieRating"
+        app:layout_constraintTop_toBottomOf="@id/rbMovieRating" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvGenres"
         android:layout_width="match_parent"
@@ -108,9 +119,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:fontFamily="@font/rubik_semi_bold"
-        android:padding="5dp"
+        android:padding="8dp"
         android:text="@string/overview"
         android:textColor="?attr/colorPrimaryVariant"
-        android:textSize="18sp"
+        android:textSize="21sp"
         app:layout_constraintTop_toBottomOf="@id/rvGenres" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivCover"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/poster_bg"
+        android:padding="8dp"
+        app:layout_constraintHeight_percent="0.4"
+        app:layout_constraintTop_toBottomOf="@id/tvOverview" />
 </androidx.constraintlayout.motion.widget.MotionLayout>

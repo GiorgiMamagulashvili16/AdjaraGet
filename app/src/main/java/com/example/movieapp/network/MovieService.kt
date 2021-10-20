@@ -26,6 +26,6 @@ interface MovieService {
     @GET("/3/movie/{movie_id}?api_key=$API_KEY")
     suspend fun getMovieById(
         @Path("movie_id")
-        movieId: String
+        movieId: Int
     ): Response<MovieDetailResponse>
 }

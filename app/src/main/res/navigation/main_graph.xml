@@ -26,6 +26,9 @@
             app:destination="@id/moviesFragment"
             app:popUpTo="@id/movieDetailFragment"
             app:popUpToInclusive="true" />
+        <argument
+            android:name="movieId"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/moviesFragment"
