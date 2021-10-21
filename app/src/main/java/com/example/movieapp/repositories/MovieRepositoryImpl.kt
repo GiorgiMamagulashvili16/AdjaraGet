@@ -2,7 +2,6 @@ package com.example.movieapp.repositories
 
 import android.util.Log.d
 import com.example.movieapp.models.Error
-import com.example.movieapp.models.Movie
 import com.example.movieapp.models.MovieDetailResponse
 import com.example.movieapp.models.MovieResponse
 import com.example.movieapp.network.MovieService
@@ -11,6 +10,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
+import java.net.SocketTimeoutException
 import javax.inject.Inject
 
 class MovieRepositoryImpl @Inject constructor(
@@ -22,11 +22,10 @@ class MovieRepositoryImpl @Inject constructor(
                 val response = service.getTopRatedMovies(page)
                 if (response.isSuccessful) {
                     val body = response.body()!!
-                    d("STATEB", "$body")
                     Resource.Success(body)
                 } else {
                     val errorBody =
-                        Gson().fromJson(response.errorBody()!!.toString(), Error::class.java)
+                        Gson().fromJson(response.errorBody()!!.string(), Error::class.java)
                     Resource.Error(errorBody.statusMessage)
                 }
             } catch (e: HttpException) {
@@ -40,15 +39,16 @@ class MovieRepositoryImpl @Inject constructor(
                 val response = service.getPopularMovies(page)
                 if (response.isSuccessful) {
                     val body = response.body()!!
-                    d("STATEB", "$body")
                     Resource.Success(body)
                 } else {
                     val errorBody =
-                        Gson().fromJson(response.errorBody()!!.toString(), Error::class.java)
+                        Gson().fromJson(response.errorBody()!!.string(), Error::class.java)
                     Resource.Error(errorBody.statusMessage)
                 }
             } catch (e: HttpException) {
-                Resource.Error(e.message!!)
+                Resource.Error(e.localizedMessage!!)
+            } catch (e: SocketTimeoutException) {
+                Resource.Error(e.localizedMessage!!)
             }
         }
 
@@ -58,11 +58,10 @@ class MovieRepositoryImpl @Inject constructor(
                 val response = service.getMovieById(movieId = movieId)
                 if (response.isSuccessful) {
                     val body = response.body()!!
-                    d("STATEB", "$body")
                     Resource.Success(body)
                 } else {
                     val errorBody =
-                        Gson().fromJson(response.errorBody()!!.toString(), Error::class.java)
+                        Gson().fromJson(response.errorBody()!!.string(), Error::class.java)
                     Resource.Error(errorBody.statusMessage)
                 }
             } catch (e: HttpException) {

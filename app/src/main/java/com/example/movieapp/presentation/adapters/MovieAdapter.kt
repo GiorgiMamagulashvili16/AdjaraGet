@@ -23,9 +23,10 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.VH>() {
     val movieList = mutableListOf<Movie>()
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        holder.onBind(movie = movieList[position])
+        val item = movieList[position]
+        holder.onBind(item)
         holder.binding.root.setOnClickListener {
-            onPosterClick.invoke(movieList[position].id)
+            onPosterClick.invoke(item.id)
         }
         if (position == movieList.size - 2) {
             isLastItem.invoke(true)
@@ -45,10 +46,8 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.VH>() {
     class VH(val binding: RowMovieItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun onBind(movie: Movie) {
-            with(binding) {
-                root
-                root.loadImage(IMAGE_URL + movie.poster_path)
-            }
+            binding.root.loadImage(IMAGE_URL + movie.poster_path)
+
         }
     }
 

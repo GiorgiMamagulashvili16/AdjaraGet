@@ -19,6 +19,7 @@ import com.example.movieapp.util.Constants.IMAGE_URL
 import com.example.movieapp.util.Resource
 import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -37,27 +38,21 @@ class MovieDetailFragment :
         setListeners()
         initGenreRecycle()
         observeData()
-
     }
 
     private fun observeData() {
-        lifecycleScope.launch {
-            vm.result.collectLatest { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        setDetailInfo(result.data!!)
-                        dismissLoadingDialog()
+        lifecycleScope.launchWhenCreated {
+            vm.result.collect { state ->
+                if (state.isLoading)
+                    showLoadingDialog()
+                else
+                    dismissLoadingDialog()
+                if (state.error != null)
+                    showErrorDialog(state.error) {
+                        vm.getMovieById(args.movieId)
                     }
-                    is Resource.Error -> {
-                        showErrorDialog(result.errorMessage!!) {
-                            vm.getMovieById(args.movieId)
-                        }
-                        dismissLoadingDialog()
-                    }
-                    is Resource.Loading -> {
-                        showLoadingDialog()
-                    }
-                }
+                if (state.data != null)
+                    setDetailInfo(state.data)
             }
         }
     }

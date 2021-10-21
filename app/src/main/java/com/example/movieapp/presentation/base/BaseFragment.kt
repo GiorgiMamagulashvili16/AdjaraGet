@@ -51,7 +51,7 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) 
     }
 
     protected fun dismissErrorDialog() {
-        errorDialog?.dismiss()
+        errorDialog?.hide()
     }
 
     protected fun showLoadingDialog() {
@@ -62,7 +62,7 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) 
     }
 
     protected fun dismissLoadingDialog() {
-        loadingDialog?.dismiss()
+        loadingDialog?.hide()
     }
 
     override fun onDestroy() {

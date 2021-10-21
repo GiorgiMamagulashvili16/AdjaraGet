@@ -51,40 +51,38 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
 
     private fun paginate() {
         movieAdapter.isLastItem = {
-            if (it == true) {
+            if (it) {
                 currentPage++
-                d("current","$currentPage")
-                if (currentPage != totalPages)
+                if (currentPage != totalPages) {
                     viewModel.getMovies(currentPage)
-            }
-        }
-    }
-
-    private fun observeResult() {
-        lifecycleScope.launch {
-            viewModel.result.collectLatest { state ->
-                when (state) {
-                    is Resource.Success -> if (movieAdapter.movieList.isEmpty()) {
-                        val result = state.data?.results!!
-                        movieAdapter.insertList(result)
-                        totalPages = state.data.totalPages
-                        dismissLoadingDialog()
-                    } else {
-                        movieAdapter.loadMore(state.data?.results!!)
-                        dismissLoadingDialog()
-                    }
-                    is Resource.Error -> {
-                        showErrorDialog(state.errorMessage!!) {
-                            viewModel.getMovies(currentPage)
-                        }
-                        dismissLoadingDialog()
-                    }
-                    is Resource.Loading -> showLoadingDialog()
                 }
             }
         }
     }
 
+    private fun observeResult() {
+        lifecycleScope.launchWhenCreated {
+            viewModel.result.collect { state ->
+                if (state.isLoading) {
+                    showLoadingDialog()
+                }else{
+                    dismissLoadingDialog()
+                }
+                if (state.data.isNotEmpty()) {
+                    if (movieAdapter.movieList.isEmpty()) {
+                        movieAdapter.insertList(state.data)
+                    } else {
+                        movieAdapter.loadMore(state.data)
+                    }
+                }
+                if (state.error != null) {
+                    showErrorDialog(state.error) {
+                        viewModel.getMovies(currentPage)
+                    }
+                }
+            }
+        }
+    }
     private fun initRecycleView() {
         binding.rvMovies.apply {
             layoutManager =

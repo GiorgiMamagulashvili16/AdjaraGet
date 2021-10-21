@@ -1,11 +1,7 @@
 package com.example.movieapp.presentation.movies_screen
 
-import android.util.Log.d
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.movieapp.models.Error
-import com.example.movieapp.models.Movie
-import com.example.movieapp.models.MovieResponse
 import com.example.movieapp.repositories.MovieRepositoryImpl
 import com.example.movieapp.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,29 +17,46 @@ class MoviesViewModel @Inject constructor(
     private val _chipState = MutableStateFlow<ChipState>(buildVariantChipState)
     val chipState: StateFlow<ChipState> = _chipState
 
-    private val _isLandscape = MutableStateFlow<Boolean>(false)
-    val isLandscape: StateFlow<Boolean> = _isLandscape
-
-    fun isLandScape(state: Boolean) = viewModelScope.launch {
-        _isLandscape.value = state
-    }
-
     fun setChipState(state: ChipState) = viewModelScope.launch {
         _chipState.value = state
     }
 
-    private val _result = MutableStateFlow<Resource<MovieResponse>>(Resource.Loading())
-    val result: StateFlow<Resource<MovieResponse>> = _result
+    private val _result = MutableStateFlow(MovieScreenState())
+    val result: StateFlow<MovieScreenState> = _result
 
     fun getMovies(page: Int) = viewModelScope.launch {
+
         when (_chipState.value) {
             is ChipState.TopRated -> {
-                _result.value = movieRepo.getTopRatedMovies(page)
+                getTopRatedMovies(page)
             }
             is ChipState.Popular -> {
-                _result.value = movieRepo.getPopular(page)
+                getPopularMovies(page)
             }
+            else -> Unit
         }
     }
 
+    private suspend fun getTopRatedMovies(page: Int) = viewModelScope.launch {
+        _result.value = MovieScreenState(isLoading = true)
+        val response = movieRepo.getTopRatedMovies(page)
+        when (response) {
+            is Resource.Success -> _result.value =
+                MovieScreenState(isLoading = false, data = response.data?.results!!)
+            is Resource.Error -> _result.value =
+                MovieScreenState(isLoading = false, error = response.errorMessage)
+        }
+    }
+
+    private suspend fun getPopularMovies(page: Int) = viewModelScope.launch {
+        _result.value = MovieScreenState(isLoading = true)
+        val response = movieRepo.getPopular(page)
+        when (response) {
+            is Resource.Success -> _result.value =
+                MovieScreenState(isLoading = false, data = response.data?.results!!)
+            is Resource.Error -> _result.value =
+                MovieScreenState(isLoading = false, error = response.errorMessage)
+        }
+    }
 }
+
