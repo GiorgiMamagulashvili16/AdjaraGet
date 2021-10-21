@@ -12,12 +12,10 @@
         android:layout_height="0dp"
         android:layout_marginStart="30dp"
         android:scaleType="centerCrop"
-        android:src="@mipmap/logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHeight_percent="0.8"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/poster_bg"
         app:layout_constraintWidth_percent="0.5" />
 
     <androidx.appcompat.widget.AppCompatImageButton
@@ -89,7 +87,18 @@
         android:progressTint="@color/orange"
         android:rating="3.0"
         app:layout_constraintEnd_toEndOf="@id/view"
-        app:layout_constraintTop_toTopOf="@id/view" />
+        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/rubik_semi_bold"
+        android:textColor="?attr/colorPrimaryVariant"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="@id/rbMovieRating"
+        app:layout_constraintStart_toStartOf="@id/rbMovieRating"
+        app:layout_constraintTop_toBottomOf="@id/rbMovieRating" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvGenres"
