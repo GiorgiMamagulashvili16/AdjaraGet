@@ -1,8 +1,5 @@
 package com.example.movieapp.presentation.detail_screen
 
-import android.content.pm.ActivityInfo
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -16,13 +13,9 @@ import com.example.movieapp.presentation.adapters.GenresAdapter
 import com.example.movieapp.presentation.base.BaseFragment
 import com.example.movieapp.presentation.extensions.loadImage
 import com.example.movieapp.util.Constants.IMAGE_URL
-import com.example.movieapp.util.Resource
 import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class MovieDetailFragment :
@@ -50,6 +43,7 @@ class MovieDetailFragment :
                 if (state.error != null)
                     showErrorDialog(state.error) {
                         vm.getMovieById(args.movieId)
+                        dismissErrorDialog()
                     }
                 if (state.data != null)
                     setDetailInfo(state.data)

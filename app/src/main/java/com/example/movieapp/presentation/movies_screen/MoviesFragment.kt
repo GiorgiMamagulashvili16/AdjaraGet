@@ -2,6 +2,7 @@ package com.example.movieapp.presentation.movies_screen
 
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.graphics.Color
 import android.util.Log.d
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
@@ -15,7 +16,9 @@ import com.example.movieapp.databinding.MoviesFragmentBinding
 import com.example.movieapp.models.Movie
 import com.example.movieapp.presentation.adapters.MovieAdapter
 import com.example.movieapp.presentation.base.BaseFragment
+import com.example.movieapp.presentation.extensions.createSnackBar
 import com.example.movieapp.util.Resource
+import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -55,6 +58,8 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                 currentPage++
                 if (currentPage != totalPages) {
                     viewModel.getMovies(currentPage)
+                } else {
+                    createSnackBar(getString(string.no_more_data), Color.WHITE)
                 }
             }
         }
@@ -65,7 +70,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
             viewModel.result.collect { state ->
                 if (state.isLoading) {
                     showLoadingDialog()
-                }else{
+                } else {
                     dismissLoadingDialog()
                 }
                 if (state.data.isNotEmpty()) {
@@ -78,11 +83,13 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                 if (state.error != null) {
                     showErrorDialog(state.error) {
                         viewModel.getMovies(currentPage)
+                        dismissErrorDialog()
                     }
                 }
             }
         }
     }
+
     private fun initRecycleView() {
         binding.rvMovies.apply {
             layoutManager =
