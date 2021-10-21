@@ -69,6 +69,7 @@ class MovieDetailFragment :
         }
     }
 
+
     private fun setListeners() {
         with(binding) {
             ibBack.setOnClickListener {
@@ -89,5 +90,4 @@ class MovieDetailFragment :
     private fun setGenres(genres: List<Genre>) {
         genreAdapter.submitList(genres)
     }
-
 }

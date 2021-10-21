@@ -14,4 +14,9 @@
     <string name="retry">Retry</string>
     <string name="loading">Loading…</string>
     <string name="no_more_data">No More Data</string>
+    <array name="autosize_text_sizes">
+        <item>12sp</item>
+        <item>15sp</item>
+        <item>18sp</item>
+    </array>
 </resources>

@@ -3,7 +3,7 @@ package com.example.movieapp.presentation.movies_screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movieapp.repositories.MovieRepositoryImpl
-import com.example.movieapp.util.Resource
+import com.example.movieapp.util.ResponseHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +14,7 @@ import javax.inject.Inject
 class MoviesViewModel @Inject constructor(
     private val movieRepo: MovieRepositoryImpl
 ) : ViewModel(), SetChipState {
+
     private val _chipState = MutableStateFlow<ChipState>(buildVariantChipState)
     val chipState: StateFlow<ChipState> = _chipState
 
@@ -41,20 +42,20 @@ class MoviesViewModel @Inject constructor(
         _result.value = MovieScreenState(isLoading = true)
         val response = movieRepo.getTopRatedMovies(page)
         when (response) {
-            is Resource.Success -> _result.value =
+            is ResponseHandler.Success -> _result.value =
                 MovieScreenState(isLoading = false, data = response.data?.results!!)
-            is Resource.Error -> _result.value =
+            is ResponseHandler.Error -> _result.value =
                 MovieScreenState(isLoading = false, error = response.errorMessage)
         }
     }
 
     private suspend fun getPopularMovies(page: Int) = viewModelScope.launch {
         _result.value = MovieScreenState(isLoading = true)
-        val response = movieRepo.getPopular(page)
+        val response = movieRepo.getPopularMovies(page)
         when (response) {
-            is Resource.Success -> _result.value =
+            is ResponseHandler.Success -> _result.value =
                 MovieScreenState(isLoading = false, data = response.data?.results!!)
-            is Resource.Error -> _result.value =
+            is ResponseHandler.Error -> _result.value =
                 MovieScreenState(isLoading = false, error = response.errorMessage)
         }
     }

@@ -45,7 +45,7 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvTitle"
-        android:layout_width="100dp"
+        android:layout_width="190dp"
         android:layout_height="wrap_content"
         android:layout_margin="25dp"
         android:fontFamily="@font/rubik_semi_bold"
@@ -53,6 +53,9 @@
         android:text="@string/title"
         android:textColor="?attr/colorPrimaryVariant"
         android:textSize="19sp"
+        app:autoSizePresetSizes="@array/autosize_text_sizes"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/view"
         app:layout_constraintTop_toTopOf="@id/view" />
 
@@ -129,7 +132,6 @@
         android:id="@+id/ivCover"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@drawable/poster_bg"
         android:padding="8dp"
         app:layout_constraintHeight_percent="0.4"
         app:layout_constraintTop_toBottomOf="@id/tvOverview" />

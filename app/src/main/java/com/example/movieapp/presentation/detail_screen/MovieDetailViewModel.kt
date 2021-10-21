@@ -3,7 +3,7 @@ package com.example.movieapp.presentation.detail_screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movieapp.repositories.MovieRepositoryImpl
-import com.example.movieapp.util.Resource
+import com.example.movieapp.util.ResponseHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,9 +22,9 @@ class MovieDetailViewModel @Inject constructor(
         _result.value = DetailScreenState(isLoading = true)
         val response = movieRepository.getMovieById(movieId)
         when (response) {
-            is Resource.Success -> _result.value =
+            is ResponseHandler.Success -> _result.value =
                 DetailScreenState(isLoading = false, data = response.data)
-            is Resource.Error -> _result.value =
+            is ResponseHandler.Error -> _result.value =
                 DetailScreenState(isLoading = false, error = response.errorMessage)
         }
     }
