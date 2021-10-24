@@ -21,7 +21,6 @@ class SplashFragment : BaseFragment<SplashFragmentBinding>(SplashFragmentBinding
             ivLogo.setAnim(LOGO_ANIM_DURATION, anim.logo_anim) {
                 viewModel.isAnimOver(true)
             }
-
         }
         lifecycleScope.launch {
             viewModel.moveToNextFragment.collect {isAnimationOver->
