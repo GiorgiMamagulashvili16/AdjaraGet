@@ -11,6 +11,7 @@ import com.example.movieapp.databinding.DialogErrorBinding
 import com.example.movieapp.databinding.DialogLoadingBinding
 import com.example.movieapp.presentation.extensions.setDialog
 import com.example.movieapp.util.Inflate
+import com.example.movieapp.util.NetworkConnectionChecker
 
 
 abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) : Fragment() {
@@ -20,6 +21,8 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) 
 
     private var errorDialog: Dialog? = null
     private var loadingDialog: Dialog? = null
+
+    protected var hasInternetConnection: Boolean? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,6 +35,11 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        NetworkConnectionChecker(requireContext()).observe(viewLifecycleOwner, {
+            hasInternetConnection = it
+        })
+
         initFragment()
     }
 
