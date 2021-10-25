@@ -5,12 +5,10 @@ import java.net.Socket
 
 object ConnectionChecker {
 
-    fun hasInternet():Boolean{
+    fun hasInternet(): Boolean {
         return try {
-            val socket = Socket()
-            socket.connect(InetSocketAddress("8.8.8.8", 53), 1500)
-            socket.close()
-            true
+            val command = "ping -c 1 google.com"
+            (Runtime.getRuntime().exec(command).waitFor() == 0)
         } catch (e: Exception) {
             false
         }
