@@ -41,10 +41,10 @@ class MovieDetailFragment :
                 else
                     dismissLoadingDialog()
                 if (state.error != null)
-                    showErrorDialog(state.error) {
+                    showErrorDialog(state.error, onRetryClick = {
                         vm.getMovieById(args.movieId)
                         dismissErrorDialog()
-                    }
+                    })
                 if (state.data != null)
                     setDetailInfo(state.data)
             }

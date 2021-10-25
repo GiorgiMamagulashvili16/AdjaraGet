@@ -19,4 +19,6 @@
         <item>15sp</item>
         <item>18sp</item>
     </array>
+    <string name="no_internet">No Internet Connection</string>
+    <string name="go_to_saved">Go To Saved Movies</string>
 </resources>

@@ -16,14 +16,13 @@ class SplashFragment : BaseFragment<SplashFragmentBinding>(SplashFragmentBinding
 
     private val viewModel: SplashViewModel by viewModels()
     override fun initFragment() {
-
         binding.apply {
             ivLogo.setAnim(LOGO_ANIM_DURATION, anim.logo_anim) {
                 viewModel.isAnimOver(true)
             }
         }
         lifecycleScope.launch {
-            viewModel.moveToNextFragment.collect {isAnimationOver->
+            viewModel.moveToNextFragment.collect { isAnimationOver ->
                 if (isAnimationOver)
                     findNavController().navigate(R.id.action_splashFragment_to_moviesFragment)
             }

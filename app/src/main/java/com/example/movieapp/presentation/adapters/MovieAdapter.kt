@@ -1,35 +1,25 @@
 package com.example.movieapp.presentation.adapters
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.movieapp.databinding.RowMovieItemBinding
 import com.example.movieapp.models.Movie
 import com.example.movieapp.presentation.extensions.loadImage
 import com.example.movieapp.util.Constants.IMAGE_URL
-import com.example.movieapp.util.IsLastItem
 import com.example.movieapp.util.onPosterClick
 
-class MovieAdapter : RecyclerView.Adapter<MovieAdapter.VH>() {
+class MovieAdapter : PagingDataAdapter<Movie, MovieAdapter.VH>(COMPARATOR) {
 
-    lateinit var isLastItem: IsLastItem
     lateinit var onPosterClick: onPosterClick
 
-    val movieList = mutableListOf<Movie>()
-
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val item = movieList[position]
-        holder.onBind(item)
+        val item = getItem(position)
+        holder.onBind(item!!)
         holder.binding.root.setOnClickListener {
             onPosterClick.invoke(item.id)
-        }
-        if (position == movieList.size - 2) {
-            isLastItem.invoke(true)
         }
     }
 
@@ -47,30 +37,16 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.VH>() {
         RecyclerView.ViewHolder(binding.root) {
         fun onBind(movie: Movie) {
             binding.root.loadImage(IMAGE_URL + movie.poster_path)
-
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun insertList(newList: List<Movie>) {
-        this.movieList.addAll(newList)
-        notifyDataSetChanged()
-    }
+    object COMPARATOR : DiffUtil.ItemCallback<Movie>() {
+        override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean =
+            oldItem.id == newItem.id
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun loadMore(movieList: List<Movie>) {
-        this.movieList.addAll(movieList)
-        notifyDataSetChanged()
-    }
+        override fun areContentsTheSame(oldItem: Movie, newItem: Movie): Boolean =
+            oldItem == newItem
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun clearList() {
-        this.movieList.clear()
-        notifyDataSetChanged()
-    }
-
-    override fun getItemCount(): Int {
-        return movieList.size
     }
 
 }

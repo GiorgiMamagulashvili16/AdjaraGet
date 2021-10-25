@@ -1,6 +1,7 @@
 package com.example.movieapp.di
 
 import com.example.movieapp.network.MovieService
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,9 +18,13 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideMovieService(): MovieService = Retrofit.Builder()
+    fun provideRetrofit(): Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-        .create(MovieService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMovieService(retrofit: Retrofit): MovieService =
+        retrofit.create(MovieService::class.java)
 }
