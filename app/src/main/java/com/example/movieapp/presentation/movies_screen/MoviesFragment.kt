@@ -1,23 +1,23 @@
 package com.example.movieapp.presentation.movies_screen
 
 import android.content.res.Configuration
-import android.graphics.Color
 import android.util.Log.d
+import android.widget.AbsListView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.movieapp.R
 import com.example.movieapp.databinding.MoviesFragmentBinding
 import com.example.movieapp.presentation.adapters.MovieAdapter
-import com.example.movieapp.presentation.adapters.MovieLoadStateAdapter
 import com.example.movieapp.presentation.base.BaseFragment
-import com.example.movieapp.presentation.extensions.createSnackBar
 import com.example.movieapp.util.NetworkConnectionChecker
 import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -29,6 +29,11 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
     private var isLandscapeMode: Boolean = false
 
     private var hasInternet: Boolean? = null
+
+    var isLoading = false
+    var isLastPage = false
+    var isScrolling = false
+
     override fun initFragment() {
         observeNetworkConnection()
         getScreenOrientationInfo()
@@ -43,30 +48,17 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
     private fun observeNetworkConnection() {
         NetworkConnectionChecker(requireContext()).observe(viewLifecycleOwner, { it ->
             hasInternet = it
-            d("STATE", "$it")
             getMovies()
         })
-
+//        lifecycleScope.launch {
+//            delay(4000)
+//            if (hasInternet == null) {
+//                hasInternet = false
+//                getMovies()
+//            }
+//        }
     }
 
-    private fun loadState() {
-        movieAdapter.addLoadStateListener { state ->
-            when (state.source.refresh) {
-                is LoadState.Loading -> d("LOADSTATE","loading")
-                is LoadState.Error -> {
-                    d("LOADSTATE","error")
-                    showErrorDialog(
-                        (state.source.refresh as LoadState.Error).error.localizedMessage!!,
-                        onRetryClick = {
-                            movieAdapter.retry()
-                            dismissErrorDialog()
-                        })
-                    dismissLoadingDialog()
-                }
-                is LoadState.NotLoading ->  d("LOADSTATE","not load")
-            }
-        }
-    }
 
     private fun getScreenOrientationInfo() {
         val orientation = requireActivity().resources.configuration.orientation
@@ -75,16 +67,53 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
     }
 
     private fun observeResult() {
-        viewLifecycleOwner.lifecycleScope.launch {
+        lifecycleScope.launch {
             viewModel.result.collect { state ->
-                if (state.data != null) {
-                    movieAdapter.submitData(viewLifecycleOwner.lifecycle, state.data)
+                if (!state.isLoading)
                     dismissLoadingDialog()
+                if (state.isLoading)
+                    showLoadingDialog()
+                if (state.data != null) {
+                    dismissLoadingDialog()
+                    d("RESULT", "${state.data.results}")
+                    movieAdapter.submitList(state.data.results)
+                    val totalPages = state.data.totalPages
+                    isLastPage = viewModel.currentPage == totalPages
+
                 }
+                if (state.error != null) {
+                    showErrorDialog(state.error, onRetryClick = {
+                        viewModel.changeCurrentPage(0)
+                        viewModel.getMovies()
+                    })
+                }
+
             }
         }
     }
 
+    private val scrollListener = object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+
+            val layoutManager = recyclerView.layoutManager as GridLayoutManager
+            val currentItem = layoutManager.childCount
+            val totalItems = layoutManager.itemCount
+            val scrollOutItem = layoutManager.findFirstVisibleItemPosition()
+            val isAtLastItem = currentItem + scrollOutItem >= totalItems
+            if (isScrolling && isAtLastItem) {
+                isScrolling = false
+                viewModel.getMovies()
+            }
+        }
+
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            super.onScrollStateChanged(recyclerView, newState)
+            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                isScrolling = true
+            }
+        }
+    }
 
     private fun initRecycleView() {
         binding.rvMovies.apply {
@@ -93,11 +122,8 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                     requireContext(),
                     2
                 )
-            adapter = movieAdapter.withLoadStateHeaderAndFooter(
-                header = MovieLoadStateAdapter { movieAdapter.retry() },
-                footer = MovieLoadStateAdapter { movieAdapter.retry() }
-            )
-
+            adapter = movieAdapter
+            addOnScrollListener(scrollListener)
         }
     }
 
@@ -130,14 +156,16 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                 when (checkedId) {
                     R.id.chpPopular -> {
                         viewModel.setChipState(ChipState.Popular)
+                        viewModel.changeCurrentPage(0)
                         getMovies()
                     }
                     R.id.chpSaved -> {
                         viewModel.setChipState(ChipState.Saved)
-                        getMovies()
+
                     }
                     R.id.chpTopRated -> {
                         viewModel.setChipState(ChipState.TopRated)
+                        viewModel.changeCurrentPage(0)
                         getMovies()
                     }
                 }
@@ -147,7 +175,9 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
     private fun getMovies() {
         when (hasInternet) {
             true -> {
+                dismissLoadingDialog()
                 viewModel.getMovies()
+
             }
             null -> {
                 showLoadingDialog()
@@ -164,7 +194,5 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                     })
             }
         }
-        loadState()
     }
-
 }

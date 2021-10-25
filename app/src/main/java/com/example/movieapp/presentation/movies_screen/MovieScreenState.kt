@@ -1,8 +1,9 @@
 package com.example.movieapp.presentation.movies_screen
 
-import androidx.paging.PagingData
-import com.example.movieapp.models.Movie
+import com.example.movieapp.models.MovieResponse
 
 data class MovieScreenState(
-    val data: PagingData<Movie>? = null,
+    val isLoading: Boolean = false,
+    val data: MovieResponse? = null,
+    val error: String? = null
 )

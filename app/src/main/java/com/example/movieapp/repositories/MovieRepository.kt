@@ -8,9 +8,7 @@ import com.example.movieapp.util.ResponseHandler
 import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
-     fun getTopRatedMovies(): Flow<PagingData<Movie>>
-     fun getPopularMovies(): Flow<PagingData<Movie>>
     suspend fun getMovieById(movieId: Int): ResponseHandler<MovieDetailResponse>
-//    suspend fun getTopRated():ResponseHandler<List<Movie>>
-//    suspend fun get
+    suspend fun getTopRatedMovies(page: Int): ResponseHandler<MovieResponse>
+    suspend fun getPopularMovies(page: Int): ResponseHandler<MovieResponse>
 }

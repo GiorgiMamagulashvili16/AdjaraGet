@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movieapp.databinding.RowMovieItemBinding
 import com.example.movieapp.models.Movie
@@ -11,7 +12,7 @@ import com.example.movieapp.presentation.extensions.loadImage
 import com.example.movieapp.util.Constants.IMAGE_URL
 import com.example.movieapp.util.onPosterClick
 
-class MovieAdapter : PagingDataAdapter<Movie, MovieAdapter.VH>(COMPARATOR) {
+class MovieAdapter : ListAdapter<Movie, MovieAdapter.VH>(COMPARATOR) {
 
     lateinit var onPosterClick: onPosterClick
 
