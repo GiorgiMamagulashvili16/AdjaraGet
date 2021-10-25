@@ -107,7 +107,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
     }
 
     private fun setChipsValue() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.chipState.collect { state ->
                 when (state) {
                     is ChipState.Popular -> {
