@@ -5,37 +5,21 @@ import com.example.movieapp.models.MovieDetailResponse
 import com.example.movieapp.models.MovieResponse
 import com.example.movieapp.network.MovieService
 import com.example.movieapp.util.ResponseHandler
+import com.example.movieapp.util.fetchData
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.HttpException
-import java.net.SocketTimeoutException
+import java.lang.Exception
 import javax.inject.Inject
 
 class MovieRepositoryImpl @Inject constructor(
-    private val service: MovieService
+    private val movieService: MovieService
 ) : MovieRepository {
-    override suspend fun getTopRatedMovies(page: Int): ResponseHandler<MovieResponse> =
-        withContext(Dispatchers.IO) {
-            return@withContext try {
-                val response = service.getTopRatedMovies(page)
-                if (response.isSuccessful) {
-                    val body = response.body()!!
-                    ResponseHandler.Success(body)
-                } else {
-                    val errorBody =
-                        Gson().fromJson(response.errorBody()!!.string(), Error::class.java)
-                    ResponseHandler.Error(errorBody.statusMessage)
-                }
-            } catch (e: HttpException) {
-                ResponseHandler.Error(e.message!!)
-            }
-        }
+    override suspend fun getMovieById(movieId: Int): ResponseHandler<MovieDetailResponse> {
 
-    override suspend fun getPopularMovies(page: Int): ResponseHandler<MovieResponse> =
-        withContext(Dispatchers.IO) {
-            return@withContext try {
-                val response = service.getPopularMovies(page)
+        return withContext(Dispatchers.IO) {
+            fetchData {
+                val response = movieService.getMovieById(movieId = movieId)
                 if (response.isSuccessful) {
                     val body = response.body()!!
                     ResponseHandler.Success(body)
@@ -44,17 +28,14 @@ class MovieRepositoryImpl @Inject constructor(
                         Gson().fromJson(response.errorBody()!!.string(), Error::class.java)
                     ResponseHandler.Error(errorBody.statusMessage)
                 }
-            } catch (e: HttpException) {
-                ResponseHandler.Error(e.localizedMessage!!)
-            } catch (e: SocketTimeoutException) {
-                ResponseHandler.Error(e.localizedMessage!!)
             }
         }
+    }
 
-    override suspend fun getMovieById(movieId: Int): ResponseHandler<MovieDetailResponse> =
-        withContext(Dispatchers.IO) {
-            return@withContext try {
-                val response = service.getMovieById(movieId = movieId)
+    override suspend fun getTopRatedMovies(page: Int): ResponseHandler<MovieResponse> {
+        return withContext(Dispatchers.IO) {
+            fetchData {
+                val response = movieService.getTopRatedMovies(page)
                 if (response.isSuccessful) {
                     val body = response.body()!!
                     ResponseHandler.Success(body)
@@ -63,8 +44,23 @@ class MovieRepositoryImpl @Inject constructor(
                         Gson().fromJson(response.errorBody()!!.string(), Error::class.java)
                     ResponseHandler.Error(errorBody.statusMessage)
                 }
-            } catch (e: HttpException) {
-                ResponseHandler.Error(e.message!!)
             }
         }
+    }
+
+    override suspend fun getPopularMovies(page: Int): ResponseHandler<MovieResponse> {
+        return withContext(Dispatchers.IO) {
+            fetchData {
+                val response = movieService.getPopularMovies(page)
+                if (response.isSuccessful) {
+                    val body = response.body()!!
+                    ResponseHandler.Success(body)
+                } else {
+                    val errorBody =
+                        Gson().fromJson(response.errorBody()!!.string(), Error::class.java)
+                    ResponseHandler.Error(errorBody.statusMessage)
+                }
+            }
+        }
+    }
 }

@@ -2,6 +2,7 @@ package com.example.movieapp.presentation.base
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,8 @@ import com.example.movieapp.databinding.DialogLoadingBinding
 import com.example.movieapp.presentation.extensions.setDialog
 import com.example.movieapp.util.Inflate
 import com.example.movieapp.util.NetworkConnectionChecker
+import com.example.movieapp.util.string
+import java.lang.Exception
 
 
 abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) : Fragment() {
@@ -21,9 +24,6 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) 
 
     private var errorDialog: Dialog? = null
     private var loadingDialog: Dialog? = null
-
-    protected var hasInternetConnection: Boolean? = null
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,21 +35,22 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        NetworkConnectionChecker(requireContext()).observe(viewLifecycleOwner, {
-            hasInternetConnection = it
-        })
-
         initFragment()
     }
 
+
     abstract fun initFragment()
 
-    protected fun showErrorDialog(message: String, onRetryClick: () -> Unit) {
+    protected fun showErrorDialog(
+        message: String,
+        onRetryClick: () -> Unit,
+        btnText: String = getString(string.retry)
+    ) {
         errorDialog = Dialog(requireContext())
         val binding = DialogErrorBinding.inflate(layoutInflater)
         errorDialog!!.setDialog(binding)
         with(binding) {
+            btnRetry.text = btnText
             btnRetry.setOnClickListener {
                 onRetryClick()
             }

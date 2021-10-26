@@ -21,7 +21,6 @@ class GenresAdapter : ListAdapter<Genre, GenresAdapter.VH>(COMPARATOR) {
 
     class VH(val binding: RowChipItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun onBind(genre: Genre) {
-
             binding.root.text = genre.name
         }
     }
