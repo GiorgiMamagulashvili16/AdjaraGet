@@ -20,7 +20,7 @@ class NetworkConnectionChecker(context: Context) : LiveData<Boolean>() {
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private val connectivityManager =
         context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-    private val validNetwork: MutableSet<Network> = HashSet()
+    private val validNetwork: MutableSet<Network> = mutableSetOf()
 
     override fun onActive() {
         super.onActive()

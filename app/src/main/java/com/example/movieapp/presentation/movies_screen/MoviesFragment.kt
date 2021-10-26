@@ -101,7 +101,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
             val totalItems = layoutManager.itemCount
             val scrollOutItem = layoutManager.findFirstVisibleItemPosition()
             val isAtLastItem = currentItem + scrollOutItem >= totalItems
-            if (isScrolling && isAtLastItem) {
+            if (isScrolling && isAtLastItem && !isLastPage) {
                 viewModel.getMovies()
                 isScrolling = false
             }
