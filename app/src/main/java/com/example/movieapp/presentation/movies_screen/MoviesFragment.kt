@@ -12,6 +12,8 @@ import com.example.movieapp.R
 import com.example.movieapp.databinding.MoviesFragmentBinding
 import com.example.movieapp.presentation.adapters.MovieAdapter
 import com.example.movieapp.presentation.base.BaseFragment
+import com.example.movieapp.util.Constants.CONNECTION_TIME
+import com.example.movieapp.util.Constants.DEFAULT_PAGE_INDEX
 import com.example.movieapp.util.NetworkConnectionChecker
 import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,9 +32,8 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
 
     private var hasInternet: Boolean? = null
 
-    var isLoading = false
-    var isLastPage = false
-    var isScrolling = false
+    private var isLastPage = false
+    private var isScrolling = false
 
     override fun initFragment() {
         observeNetworkConnection()
@@ -50,13 +51,13 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
             hasInternet = it
             getMovies()
         })
-//        lifecycleScope.launch {
-//            delay(4000)
-//            if (hasInternet == null) {
-//                hasInternet = false
-//                getMovies()
-//            }
-//        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            delay(CONNECTION_TIME)
+            if (hasInternet == null) {
+                hasInternet = false
+                getMovies()
+            }
+        }
     }
 
 
@@ -71,11 +72,10 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
             viewModel.result.collect { state ->
                 if (!state.isLoading)
                     dismissLoadingDialog()
-                if (state.isLoading)
+                else
                     showLoadingDialog()
                 if (state.data != null) {
                     dismissLoadingDialog()
-                    d("RESULT", "${state.data.results}")
                     movieAdapter.submitList(state.data.results)
                     val totalPages = state.data.totalPages
                     isLastPage = viewModel.currentPage == totalPages
@@ -83,7 +83,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                 }
                 if (state.error != null) {
                     showErrorDialog(state.error, onRetryClick = {
-                        viewModel.changeCurrentPage(0)
+                        viewModel.changeCurrentPage(DEFAULT_PAGE_INDEX)
                         viewModel.getMovies()
                     })
                 }
@@ -102,8 +102,8 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
             val scrollOutItem = layoutManager.findFirstVisibleItemPosition()
             val isAtLastItem = currentItem + scrollOutItem >= totalItems
             if (isScrolling && isAtLastItem) {
-                isScrolling = false
                 viewModel.getMovies()
+                isScrolling = false
             }
         }
 
@@ -156,7 +156,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                 when (checkedId) {
                     R.id.chpPopular -> {
                         viewModel.setChipState(ChipState.Popular)
-                        viewModel.changeCurrentPage(0)
+                        viewModel.changeCurrentPage(DEFAULT_PAGE_INDEX)
                         getMovies()
                     }
                     R.id.chpSaved -> {
@@ -165,7 +165,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                     }
                     R.id.chpTopRated -> {
                         viewModel.setChipState(ChipState.TopRated)
-                        viewModel.changeCurrentPage(0)
+                        viewModel.changeCurrentPage(DEFAULT_PAGE_INDEX)
                         getMovies()
                     }
                 }
@@ -177,7 +177,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
             true -> {
                 dismissLoadingDialog()
                 viewModel.getMovies()
-
             }
             null -> {
                 showLoadingDialog()
