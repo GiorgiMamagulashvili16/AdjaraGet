@@ -2,7 +2,9 @@ package com.example.movieapp.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log.d
 import com.example.movieapp.R
+import com.example.movieapp.util.NetworkConnectionChecker
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

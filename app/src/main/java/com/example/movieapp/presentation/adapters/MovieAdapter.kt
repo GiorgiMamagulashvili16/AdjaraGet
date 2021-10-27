@@ -2,7 +2,6 @@ package com.example.movieapp.presentation.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -10,17 +9,21 @@ import com.example.movieapp.databinding.RowMovieItemBinding
 import com.example.movieapp.models.Movie
 import com.example.movieapp.presentation.extensions.loadImage
 import com.example.movieapp.util.Constants.IMAGE_URL
+import com.example.movieapp.util.IsLastItem
 import com.example.movieapp.util.onPosterClick
 
 class MovieAdapter : ListAdapter<Movie, MovieAdapter.VH>(COMPARATOR) {
 
     lateinit var onPosterClick: onPosterClick
-
+    lateinit var isLastItem: IsLastItem
     override fun onBindViewHolder(holder: VH, position: Int) {
         val item = getItem(position)
         holder.onBind(item!!)
         holder.binding.root.setOnClickListener {
             onPosterClick.invoke(item.id)
+        }
+        if (position == currentList.size - 2) {
+            isLastItem.invoke(true)
         }
     }
 
@@ -37,7 +40,7 @@ class MovieAdapter : ListAdapter<Movie, MovieAdapter.VH>(COMPARATOR) {
     class VH(val binding: RowMovieItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun onBind(movie: Movie) {
-            binding.root.loadImage(IMAGE_URL + movie.poster_path)
+            binding.root.loadImage(IMAGE_URL + movie.posterPath)
         }
     }
 
@@ -49,5 +52,4 @@ class MovieAdapter : ListAdapter<Movie, MovieAdapter.VH>(COMPARATOR) {
             oldItem == newItem
 
     }
-
 }

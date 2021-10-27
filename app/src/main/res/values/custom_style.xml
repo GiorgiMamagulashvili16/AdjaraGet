@@ -12,6 +12,6 @@
     </style>
 
     <style name="CustomProgressBar" parent="Widget.AppCompat.ProgressBar">
-        <item name="colorAccent">?attr/colorOnPrimary</item> <!-- Whatever color you want-->
+        <item name="colorAccent">@color/orange</item> <!-- Whatever color you want-->
     </style>
 </resources>

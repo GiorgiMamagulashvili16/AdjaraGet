@@ -135,4 +135,15 @@
         android:padding="8dp"
         app:layout_constraintHeight_percent="0.4"
         app:layout_constraintTop_toBottomOf="@id/tvOverview" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:visibility="visible"
+        style="@style/CustomProgressBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.motion.widget.MotionLayout>

@@ -23,7 +23,6 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) 
     protected val binding get() = _binding!!
 
     private var errorDialog: Dialog? = null
-    private var loadingDialog: Dialog? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,6 +34,7 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         initFragment()
     }
 
@@ -61,17 +61,6 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) 
 
     protected fun dismissErrorDialog() {
         errorDialog?.hide()
-    }
-
-    protected fun showLoadingDialog() {
-        loadingDialog = Dialog(requireContext())
-        val binding = DialogLoadingBinding.inflate(layoutInflater)
-        loadingDialog!!.setDialog(binding)
-        loadingDialog?.show()
-    }
-
-    protected fun dismissLoadingDialog() {
-        loadingDialog?.hide()
     }
 
     override fun onDestroyView() {

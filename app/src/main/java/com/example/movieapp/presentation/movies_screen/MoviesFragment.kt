@@ -1,17 +1,17 @@
 package com.example.movieapp.presentation.movies_screen
 
 import android.content.res.Configuration
-import android.util.Log.d
-import android.widget.AbsListView
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.movieapp.R
 import com.example.movieapp.databinding.MoviesFragmentBinding
 import com.example.movieapp.presentation.adapters.MovieAdapter
 import com.example.movieapp.presentation.base.BaseFragment
+import com.example.movieapp.presentation.extensions.hide
+import com.example.movieapp.presentation.extensions.show
 import com.example.movieapp.util.Constants.CONNECTION_TIME
 import com.example.movieapp.util.Constants.DEFAULT_PAGE_INDEX
 import com.example.movieapp.util.NetworkConnectionChecker
@@ -19,7 +19,6 @@ import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -33,9 +32,9 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
     private var hasInternet: Boolean? = null
 
     private var isLastPage = false
-    private var isScrolling = false
 
     override fun initFragment() {
+
         observeNetworkConnection()
         getScreenOrientationInfo()
         setChipsValue()
@@ -43,14 +42,16 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
         setListeners()
         initRecycleView()
         observeResult()
-        getMovies()
+        if (hasInternet != true)
+            getMovies()
     }
 
     private fun observeNetworkConnection() {
-        NetworkConnectionChecker(requireContext()).observe(viewLifecycleOwner, { it ->
+        NetworkConnectionChecker(requireContext()).observe(viewLifecycleOwner, {
             hasInternet = it
             getMovies()
         })
+
         viewLifecycleOwner.lifecycleScope.launch {
             delay(CONNECTION_TIME)
             if (hasInternet == null) {
@@ -68,14 +69,14 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
     }
 
     private fun observeResult() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.result.collect { state ->
                 if (!state.isLoading)
-                    dismissLoadingDialog()
+                    binding.progressBar.hide()
                 else
-                    showLoadingDialog()
+                    binding.progressBar.show()
                 if (state.data != null) {
-                    dismissLoadingDialog()
+                    binding.progressBar.hide()
                     movieAdapter.submitList(state.data.results)
                     val totalPages = state.data.totalPages
                     isLastPage = viewModel.currentPage == totalPages
@@ -92,28 +93,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
         }
     }
 
-    private val scrollListener = object : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            super.onScrolled(recyclerView, dx, dy)
-
-            val layoutManager = recyclerView.layoutManager as GridLayoutManager
-            val currentItem = layoutManager.childCount
-            val totalItems = layoutManager.itemCount
-            val scrollOutItem = layoutManager.findFirstVisibleItemPosition()
-            val isAtLastItem = currentItem + scrollOutItem >= totalItems
-            if (isScrolling && isAtLastItem && !isLastPage) {
-                viewModel.getMovies()
-                isScrolling = false
-            }
-        }
-
-        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            super.onScrollStateChanged(recyclerView, newState)
-            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                isScrolling = true
-            }
-        }
-    }
 
     private fun initRecycleView() {
         binding.rvMovies.apply {
@@ -123,7 +102,10 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                     2
                 )
             adapter = movieAdapter
-            addOnScrollListener(scrollListener)
+        }
+        movieAdapter.isLastItem = {
+            if (it && !isLastPage)
+                getMovies()
         }
     }
 
@@ -175,15 +157,15 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
     private fun getMovies() {
         when (hasInternet) {
             true -> {
-                dismissLoadingDialog()
+                binding.progressBar.hide()
                 viewModel.getMovies()
             }
             null -> {
-                showLoadingDialog()
+                binding.progressBar.show()
+                observeNetworkConnection()
             }
             false -> {
-                dismissLoadingDialog()
-                observeNetworkConnection()
+                binding.progressBar.hide()
                 showErrorDialog(
                     getString(string.no_internet),
                     btnText = getString(string.go_to_saved),

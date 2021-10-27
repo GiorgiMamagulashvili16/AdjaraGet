@@ -8,10 +8,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movieapp.R
 import com.example.movieapp.databinding.MovieDetailFragmentBinding
 import com.example.movieapp.models.Genre
-import com.example.movieapp.models.MovieDetailResponse
+import com.example.movieapp.models.Movie
 import com.example.movieapp.presentation.adapters.GenresAdapter
 import com.example.movieapp.presentation.base.BaseFragment
+import com.example.movieapp.presentation.extensions.hide
 import com.example.movieapp.presentation.extensions.loadImage
+import com.example.movieapp.presentation.extensions.show
 import com.example.movieapp.util.Constants.IMAGE_URL
 import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,9 +39,9 @@ class MovieDetailFragment :
         lifecycleScope.launchWhenCreated {
             vm.result.collect { state ->
                 if (state.isLoading)
-                    showLoadingDialog()
+                    binding.progressBar.show()
                 else
-                    dismissLoadingDialog()
+                    binding.progressBar.hide()
                 if (state.error != null)
                     showErrorDialog(state.error, onRetryClick = {
                         vm.getMovieById(args.movieId)
@@ -51,7 +53,7 @@ class MovieDetailFragment :
         }
     }
 
-    private fun setDetailInfo(movie: MovieDetailResponse) {
+    private fun setDetailInfo(movie: Movie) {
         with(binding) {
             ivPoster.loadImage(IMAGE_URL + movie.posterPath)
             tvTitle.text = movie.title

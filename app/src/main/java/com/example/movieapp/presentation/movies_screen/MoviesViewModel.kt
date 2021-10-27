@@ -1,25 +1,19 @@
 package com.example.movieapp.presentation.movies_screen
 
-import android.util.Log.d
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
-import com.example.movieapp.models.Movie
 import com.example.movieapp.models.MovieResponse
 import com.example.movieapp.repositories.MovieRepositoryImpl
 import com.example.movieapp.util.ResponseHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MoviesViewModel @Inject constructor(
-    private val movieRepo: MovieRepositoryImpl
+    private val movieRepo: MovieRepositoryImpl,
 ) : ViewModel(), SetChipState {
 
     private val _chipState = MutableStateFlow(buildVariantChipState)
@@ -31,7 +25,7 @@ class MoviesViewModel @Inject constructor(
 
     private var topRatedMovieResponse: MovieResponse? = null
     private var popularMovieResponse: MovieResponse? = null
-     var currentPage = 0
+    var currentPage = 0
 
     fun changeCurrentPage(newValue: Int) = viewModelScope.launch {
         currentPage = newValue

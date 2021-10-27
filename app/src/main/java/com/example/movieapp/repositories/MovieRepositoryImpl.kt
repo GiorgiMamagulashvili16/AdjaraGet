@@ -1,7 +1,7 @@
 package com.example.movieapp.repositories
 
 import com.example.movieapp.models.Error
-import com.example.movieapp.models.MovieDetailResponse
+import com.example.movieapp.models.Movie
 import com.example.movieapp.models.MovieResponse
 import com.example.movieapp.network.MovieService
 import com.example.movieapp.util.ResponseHandler
@@ -9,13 +9,12 @@ import com.example.movieapp.util.fetchData
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 import javax.inject.Inject
 
 class MovieRepositoryImpl @Inject constructor(
     private val movieService: MovieService
 ) : MovieRepository {
-    override suspend fun getMovieById(movieId: Int): ResponseHandler<MovieDetailResponse> {
+    override suspend fun getMovieById(movieId: Int): ResponseHandler<Movie> {
 
         return withContext(Dispatchers.IO) {
             fetchData {
