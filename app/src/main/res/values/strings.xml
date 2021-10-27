@@ -21,4 +21,5 @@
     </array>
     <string name="no_internet">No Internet Connection</string>
     <string name="go_to_saved">Go To Saved Movies</string>
+    <string name="save">save</string>
 </resources>

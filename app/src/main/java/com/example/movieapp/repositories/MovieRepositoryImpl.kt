@@ -1,7 +1,7 @@
 package com.example.movieapp.repositories
 
 import com.example.movieapp.models.Error
-import com.example.movieapp.models.MovieDetailResponse
+import com.example.movieapp.models.Movie
 import com.example.movieapp.models.MovieResponse
 import com.example.movieapp.network.MovieService
 import com.example.movieapp.util.ResponseHandler
@@ -15,7 +15,7 @@ import javax.inject.Inject
 class MovieRepositoryImpl @Inject constructor(
     private val movieService: MovieService
 ) : MovieRepository {
-    override suspend fun getMovieById(movieId: Int): ResponseHandler<MovieDetailResponse> {
+    override suspend fun getMovieById(movieId: Int): ResponseHandler<Movie> {
 
         return withContext(Dispatchers.IO) {
             fetchData {

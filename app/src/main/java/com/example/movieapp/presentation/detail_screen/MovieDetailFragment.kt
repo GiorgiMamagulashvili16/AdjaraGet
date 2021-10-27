@@ -1,21 +1,19 @@
 package com.example.movieapp.presentation.detail_screen
 
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movieapp.R
 import com.example.movieapp.databinding.MovieDetailFragmentBinding
 import com.example.movieapp.models.Genre
-import com.example.movieapp.models.MovieDetailResponse
+import com.example.movieapp.models.Movie
 import com.example.movieapp.presentation.adapters.GenresAdapter
 import com.example.movieapp.presentation.base.BaseFragment
 import com.example.movieapp.presentation.extensions.loadImage
 import com.example.movieapp.util.Constants.IMAGE_URL
 import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class MovieDetailFragment :
@@ -27,45 +25,43 @@ class MovieDetailFragment :
 
 
     override fun initFragment() {
-        vm.getMovieById(args.movieId)
+        val movie = args.movie
+        setDetailInfo(movie)
         setListeners()
         initGenreRecycle()
-        observeData()
-    }
-
-    private fun observeData() {
-        lifecycleScope.launchWhenCreated {
-            vm.result.collect { state ->
-                if (state.isLoading)
-                    showLoadingDialog()
-                else
-                    dismissLoadingDialog()
-                if (state.error != null)
-                    showErrorDialog(state.error, onRetryClick = {
-                        vm.getMovieById(args.movieId)
-                        dismissErrorDialog()
-                    })
-                if (state.data != null)
-                    setDetailInfo(state.data)
-            }
+        binding.fabSave.setOnClickListener {
+            vm.saveMovie(movie)
         }
     }
 
-    private fun setDetailInfo(movie: MovieDetailResponse) {
+//    private fun observeData() {
+//        lifecycleScope.launchWhenCreated {
+//            vm.result.collect { state ->
+//                if (state.isLoading)
+//                    showLoadingDialog()
+//                else
+//                    dismissLoadingDialog()
+//                if (state.error != null)
+//                    showErrorDialog(state.error, onRetryClick = {
+//                        vm.getMovieById(args.movieId)
+//                        dismissErrorDialog()
+//                    })
+//                if (state.data != null)
+//                    setDetailInfo(state.data)
+//            }
+//        }
+//    }
+
+    private fun setDetailInfo(movie: Movie) {
         with(binding) {
-            ivPoster.loadImage(IMAGE_URL + movie.posterPath)
+            ivPoster.loadImage(IMAGE_URL + movie.poster_path)
             tvTitle.text = movie.title
-            tvOriginalTitle.text = movie.originalTitle
+            tvOriginalTitle.text = movie.original_title
             tvOverview.text = movie.overview
-            ivCover?.apply {
-                clipToOutline = true
-                loadImage(IMAGE_URL + movie.coverPath)
-            }
-            rbMovieRating.rating = movie.rating.toFloat() / 2
-            tvRating.text = movie.rating.toString()
-            setGenres(movie.genres)
+            rbMovieRating.rating = movie.vote_average.toFloat() / 2
+            tvRating.text = movie.vote_average.toString()
             tvReleaseDate.text =
-                getString(string.release_date_text, "Release Date:", movie.releaseDate)
+                getString(string.release_date_text, "Release Date:", movie.release_date)
         }
     }
 

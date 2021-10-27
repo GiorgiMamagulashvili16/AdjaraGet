@@ -76,9 +76,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                     showLoadingDialog()
                 if (state.data != null) {
                     dismissLoadingDialog()
-                    movieAdapter.submitList(state.data.results)
-                    val totalPages = state.data.totalPages
-                    isLastPage = viewModel.currentPage == totalPages
+                    movieAdapter.submitList(state.data)
 
                 }
                 if (state.error != null) {
@@ -92,29 +90,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
         }
     }
 
-    private val scrollListener = object : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            super.onScrolled(recyclerView, dx, dy)
-
-            val layoutManager = recyclerView.layoutManager as GridLayoutManager
-            val currentItem = layoutManager.childCount
-            val totalItems = layoutManager.itemCount
-            val scrollOutItem = layoutManager.findFirstVisibleItemPosition()
-            val isAtLastItem = currentItem + scrollOutItem >= totalItems
-            if (isScrolling && isAtLastItem && !isLastPage) {
-                viewModel.getMovies()
-                isScrolling = false
-            }
-        }
-
-        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            super.onScrollStateChanged(recyclerView, newState)
-            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                isScrolling = true
-            }
-        }
-    }
-
     private fun initRecycleView() {
         binding.rvMovies.apply {
             layoutManager =
@@ -123,13 +98,16 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                     2
                 )
             adapter = movieAdapter
-            addOnScrollListener(scrollListener)
+        }
+        movieAdapter.isLastItem = {
+            if (it)
+                getMovies()
         }
     }
 
     private fun setListeners() {
-        movieAdapter.onPosterClick = { id ->
-            val action = MoviesFragmentDirections.actionMoviesFragmentToMovieDetailFragment(id)
+        movieAdapter.onPosterClick = { movie ->
+            val action = MoviesFragmentDirections.actionMoviesFragmentToMovieDetailFragment(movie)
             findNavController().navigate(action)
         }
     }
@@ -161,7 +139,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                     }
                     R.id.chpSaved -> {
                         viewModel.setChipState(ChipState.Saved)
-
+                        getMovies()
                     }
                     R.id.chpTopRated -> {
                         viewModel.setChipState(ChipState.TopRated)
