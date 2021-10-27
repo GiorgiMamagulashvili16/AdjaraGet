@@ -35,4 +35,9 @@ class MovieDetailViewModel @Inject constructor(
     fun saveMovie(movie: Movie) = viewModelScope.launch {
         savedMovieRepo.insertMovie(movie)
     }
+
+    fun getSavedMovieById(movieId: Int) = viewModelScope.launch {
+        val result = savedMovieRepo.getMovieById(movieId)
+        _result.value = DetailScreenState(isLoading = false, data = result)
+    }
 }

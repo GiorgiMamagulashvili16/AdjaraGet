@@ -7,4 +7,5 @@ interface SavedMoviesRepository {
 
     suspend fun insertMovie(movie: Movie)
     suspend fun getMovies(): List<Movie>
+    suspend fun getMovieById(id:Int):Movie
 }

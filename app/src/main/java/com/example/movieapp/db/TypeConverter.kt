@@ -1,30 +1,26 @@
 package com.example.movieapp.db
 
+import android.graphics.Bitmap
 import androidx.room.TypeConverter
 import com.example.movieapp.models.Genre
+import com.example.movieapp.presentation.extensions.fromBitmapToByteArray
+import com.example.movieapp.presentation.extensions.fromByteArrayToBitmap
+import com.example.movieapp.presentation.extensions.fromListToString
+import com.example.movieapp.presentation.extensions.fromStringToList
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 class TypeConverter {
 
     @TypeConverter
-    fun toList(value: String): List<Genre> {
-        val type = object : TypeToken<List<Genre>>() {}.type
-        return Gson().fromJson(value, type)
-    }
+    fun toList(value: String) = value.fromStringToList<Genre>()
 
     @TypeConverter
-    fun fromList(list: List<Genre>): String {
-        return Gson().toJson(list)
-    }
+    fun fromList(list: List<Genre>) = list.fromListToString()
 
-//    @TypeConverter
-//    fun toGenre(value: String): Genre {
-//        return Genre(value)
-//    }
-//
-//    @TypeConverter
-//    fun fromGenre(genre: Genre): String {
-//        return genre.name
-//    }
+    @TypeConverter
+    fun toBitmap(byteArray: ByteArray): Bitmap = byteArray.fromByteArrayToBitmap()
+
+    @TypeConverter
+    fun fromBitmap(bitmap: Bitmap): ByteArray = bitmap.fromBitmapToByteArray()
 }

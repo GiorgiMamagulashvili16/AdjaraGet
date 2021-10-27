@@ -17,4 +17,8 @@ class SavedMovieRepoImpl @Inject constructor(
     override suspend fun getMovies(): List<Movie> = withContext(Dispatchers.IO) {
         dao.getMovies()
     }
+
+    override suspend fun getMovieById(id: Int): Movie = withContext(Dispatchers.IO) {
+        dao.getMovieById(id)
+    }
 }

@@ -72,7 +72,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
     private fun observeResult() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.result.collect { state ->
-                d("SSLDSA","${state.data}")
                 if (!state.isLoading)
                     binding.progressBar.hide()
                 else

@@ -1,5 +1,6 @@
 package com.example.movieapp.presentation.detail_screen
 
+import android.util.Log.d
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -12,6 +13,7 @@ import com.example.movieapp.models.Movie
 import com.example.movieapp.presentation.adapters.GenresAdapter
 import com.example.movieapp.presentation.base.BaseFragment
 import com.example.movieapp.presentation.extensions.hide
+import com.example.movieapp.presentation.extensions.imageToBitmap
 import com.example.movieapp.presentation.extensions.loadImage
 import com.example.movieapp.presentation.extensions.show
 import com.example.movieapp.util.Constants.IMAGE_URL
@@ -31,6 +33,7 @@ class MovieDetailFragment :
 
     override fun initFragment() {
         vm.getMovieById(args.movieId)
+
         setListeners()
         initGenreRecycle()
         observeData()
@@ -68,15 +71,29 @@ class MovieDetailFragment :
             }
             rbMovieRating.rating = movie.rating.toFloat() / 2
             tvRating.text = movie.rating.toString()
+            setGenres(movie.genres)
             tvReleaseDate.text =
                 getString(string.release_date_text, "Release Date:", movie.releaseDate)
         }
     }
 
     private fun saveMovie(movie: Movie?) {
-        binding.fabSave.setOnClickListener {
-            movie?.let {
-                vm.saveMovie(it)
+        movie?.let {
+            val favouriteMovie = Movie(
+                it.id,
+                coverPath = null,
+                it.genres,
+                it.originalTitle,
+                it.overview,
+                posterPath = null,
+                releaseDate = it.releaseDate,
+                title = it.title,
+                rating = it.rating,
+                poster = (IMAGE_URL + it.posterPath).imageToBitmap(requireContext()),
+                cover = (IMAGE_URL + it.posterPath).imageToBitmap(requireContext())
+            )
+            binding.fabSave.setOnClickListener {
+                vm.saveMovie(favouriteMovie)
             }
         }
     }
