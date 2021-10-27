@@ -15,6 +15,7 @@ import com.example.movieapp.presentation.extensions.hide
 import com.example.movieapp.presentation.extensions.loadImage
 import com.example.movieapp.presentation.extensions.show
 import com.example.movieapp.util.Constants.IMAGE_URL
+import com.example.movieapp.util.drawable
 import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
