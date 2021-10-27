@@ -12,6 +12,8 @@ import com.example.movieapp.R
 import com.example.movieapp.databinding.MoviesFragmentBinding
 import com.example.movieapp.presentation.adapters.MovieAdapter
 import com.example.movieapp.presentation.base.BaseFragment
+import com.example.movieapp.presentation.extensions.hide
+import com.example.movieapp.presentation.extensions.show
 import com.example.movieapp.util.Constants.CONNECTION_TIME
 import com.example.movieapp.util.Constants.DEFAULT_PAGE_INDEX
 import com.example.movieapp.util.NetworkConnectionChecker
@@ -33,7 +35,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
     private var hasInternet: Boolean? = null
 
     private var isLastPage = false
-    private var isScrolling = false
 
     override fun initFragment() {
         observeNetworkConnection()
@@ -43,7 +44,8 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
         setListeners()
         initRecycleView()
         observeResult()
-        getMovies()
+        if (hasInternet != true)
+            getMovies()
     }
 
     private fun observeNetworkConnection() {
@@ -71,11 +73,11 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
         lifecycleScope.launch {
             viewModel.result.collect { state ->
                 if (!state.isLoading)
-                    dismissLoadingDialog()
+                    binding.progressBar.hide()
                 else
-                    showLoadingDialog()
+                    binding.progressBar.show()
                 if (state.data != null) {
-                    dismissLoadingDialog()
+                    binding.progressBar.hide()
                     movieAdapter.submitList(state.data)
 
                 }
@@ -139,7 +141,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                     }
                     R.id.chpSaved -> {
                         viewModel.setChipState(ChipState.Saved)
-                        getMovies()
+                        viewModel.getMovies()
                     }
                     R.id.chpTopRated -> {
                         viewModel.setChipState(ChipState.TopRated)
@@ -153,15 +155,15 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
     private fun getMovies() {
         when (hasInternet) {
             true -> {
-                dismissLoadingDialog()
+                binding.progressBar.hide()
                 viewModel.getMovies()
             }
             null -> {
-                showLoadingDialog()
+                binding.progressBar.show()
+                observeNetworkConnection()
             }
             false -> {
-                dismissLoadingDialog()
-                observeNetworkConnection()
+                binding.progressBar.hide()
                 showErrorDialog(
                     getString(string.no_internet),
                     btnText = getString(string.go_to_saved),

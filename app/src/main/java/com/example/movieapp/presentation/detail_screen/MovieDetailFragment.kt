@@ -1,9 +1,16 @@
 package com.example.movieapp.presentation.detail_screen
 
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.ImageLoader
+import coil.request.ImageRequest
+import coil.request.SuccessResult
+import com.bumptech.glide.Glide
 import com.example.movieapp.R
 import com.example.movieapp.databinding.MovieDetailFragmentBinding
 import com.example.movieapp.models.Genre
@@ -14,6 +21,7 @@ import com.example.movieapp.presentation.extensions.loadImage
 import com.example.movieapp.util.Constants.IMAGE_URL
 import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MovieDetailFragment :
@@ -34,24 +42,6 @@ class MovieDetailFragment :
         }
     }
 
-//    private fun observeData() {
-//        lifecycleScope.launchWhenCreated {
-//            vm.result.collect { state ->
-//                if (state.isLoading)
-//                    showLoadingDialog()
-//                else
-//                    dismissLoadingDialog()
-//                if (state.error != null)
-//                    showErrorDialog(state.error, onRetryClick = {
-//                        vm.getMovieById(args.movieId)
-//                        dismissErrorDialog()
-//                    })
-//                if (state.data != null)
-//                    setDetailInfo(state.data)
-//            }
-//        }
-//    }
-
     private fun setDetailInfo(movie: Movie) {
         with(binding) {
             ivPoster.loadImage(IMAGE_URL + movie.poster_path)
@@ -65,6 +55,14 @@ class MovieDetailFragment :
         }
     }
 
+    private suspend fun getBitmap(url: String): Bitmap {
+        val loader = ImageLoader(requireContext())
+        val request = ImageRequest.Builder(requireContext())
+            .data(url)
+            .build()
+        val result = (loader.execute(request) as SuccessResult).drawable
+        return (result as BitmapDrawable).bitmap
+    }
 
     private fun setListeners() {
         with(binding) {
