@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movieapp.models.MovieResponse
 import com.example.movieapp.repositories.MovieRepositoryImpl
+import com.example.movieapp.repositories.saved_movies.SavedMovieRepoImpl
 import com.example.movieapp.util.ResponseHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MoviesViewModel @Inject constructor(
     private val movieRepo: MovieRepositoryImpl,
+    private val savedMovieRepo: SavedMovieRepoImpl
 ) : ViewModel(), SetChipState {
 
     private val _chipState = MutableStateFlow(buildVariantChipState)
@@ -44,9 +46,14 @@ class MoviesViewModel @Inject constructor(
                 fetchPopularMovies(currentPage)
             }
             is ChipState.Saved -> {
-                fetchTopRatedMovies(currentPage)
+                getSavedMovies()
             }
         }
+    }
+
+    private fun getSavedMovies() = viewModelScope.launch{
+        val result = savedMovieRepo.getMovies()
+        _result.value = MovieScreenState(isLoading = false, data = result)
     }
 
     private fun fetchPopularMovies(page: Int) = viewModelScope.launch {
@@ -65,7 +72,7 @@ class MoviesViewModel @Inject constructor(
                 }
                 _result.value = MovieScreenState(
                     isLoading = false,
-                    data = popularMovieResponse ?: response.data
+                    data = popularMovieResponse?.results ?: response.data!!.results
                 )
             }
             is ResponseHandler.Error -> {
@@ -90,7 +97,7 @@ class MoviesViewModel @Inject constructor(
                 }
                 _result.value = MovieScreenState(
                     isLoading = false,
-                    data = topRatedMovieResponse ?: response.data
+                    data = topRatedMovieResponse?.results ?: response.data!!.results
                 )
             }
             is ResponseHandler.Error -> {

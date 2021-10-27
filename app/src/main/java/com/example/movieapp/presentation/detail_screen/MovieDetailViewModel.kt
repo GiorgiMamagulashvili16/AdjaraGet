@@ -2,7 +2,9 @@ package com.example.movieapp.presentation.detail_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.movieapp.models.Movie
 import com.example.movieapp.repositories.MovieRepositoryImpl
+import com.example.movieapp.repositories.saved_movies.SavedMovieRepoImpl
 import com.example.movieapp.util.ResponseHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MovieDetailViewModel @Inject constructor(
-    private val movieRepository: MovieRepositoryImpl
+    private val movieRepository: MovieRepositoryImpl,
+    private val savedMovieRepo: SavedMovieRepoImpl
 ) : ViewModel() {
 
     private val _result = MutableStateFlow(DetailScreenState())
@@ -27,5 +30,9 @@ class MovieDetailViewModel @Inject constructor(
             is ResponseHandler.Error -> _result.value =
                 DetailScreenState(isLoading = false, error = response.errorMessage)
         }
+    }
+
+    fun saveMovie(movie: Movie) = viewModelScope.launch {
+        savedMovieRepo.insertMovie(movie)
     }
 }

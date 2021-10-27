@@ -37,7 +37,7 @@ class MovieDetailFragment :
     }
 
     private fun observeData() {
-        lifecycleScope.launchWhenCreated {
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             vm.result.collect { state ->
                 if (state.isLoading)
                     binding.progressBar.show()
@@ -48,8 +48,10 @@ class MovieDetailFragment :
                         vm.getMovieById(args.movieId)
                         dismissErrorDialog()
                     })
-                if (state.data != null)
+                if (state.data != null) {
                     setDetailInfo(state.data)
+                    saveMovie(state.data)
+                }
             }
         }
     }
@@ -66,12 +68,18 @@ class MovieDetailFragment :
             }
             rbMovieRating.rating = movie.rating.toFloat() / 2
             tvRating.text = movie.rating.toString()
-            setGenres(movie.genres)
             tvReleaseDate.text =
                 getString(string.release_date_text, "Release Date:", movie.releaseDate)
         }
     }
 
+    private fun saveMovie(movie: Movie?) {
+        binding.fabSave.setOnClickListener {
+            movie?.let {
+                vm.saveMovie(it)
+            }
+        }
+    }
 
     private fun setListeners() {
         with(binding) {
@@ -79,6 +87,7 @@ class MovieDetailFragment :
                 findNavController().navigate(R.id.action_movieDetailFragment_to_moviesFragment)
             }
             ivPoster.clipToOutline = true
+
         }
     }
 

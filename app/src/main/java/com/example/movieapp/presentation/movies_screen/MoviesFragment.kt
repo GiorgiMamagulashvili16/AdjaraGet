@@ -1,6 +1,7 @@
 package com.example.movieapp.presentation.movies_screen
 
 import android.content.res.Configuration
+import android.util.Log.d
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -71,15 +72,14 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
     private fun observeResult() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.result.collect { state ->
+                d("SSLDSA","${state.data}")
                 if (!state.isLoading)
                     binding.progressBar.hide()
                 else
                     binding.progressBar.show()
-                if (state.data != null) {
+                if (state.data.isNotEmpty() ) {
                     binding.progressBar.hide()
-                    movieAdapter.submitList(state.data.results)
-                    val totalPages = state.data.totalPages
-                    isLastPage = viewModel.currentPage == totalPages
+                    movieAdapter.submitList(state.data)
 
                 }
                 if (state.error != null) {
@@ -143,7 +143,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                     }
                     R.id.chpSaved -> {
                         viewModel.setChipState(ChipState.Saved)
-
+                    getMovies()
                     }
                     R.id.chpTopRated -> {
                         viewModel.setChipState(ChipState.TopRated)

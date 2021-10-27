@@ -9,4 +9,5 @@ object Constants {
     const val CONNECTION_TIME = 4000L
     const val DEFAULT_PAGE_INDEX = 0
     const val NETWORK_CHECKER_URL = "https://www.google.com/"
+    const val DB_NAME = "movies_db"
 }

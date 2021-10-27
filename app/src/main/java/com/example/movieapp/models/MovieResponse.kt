@@ -1,5 +1,7 @@
 package com.example.movieapp.models
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 data class MovieResponse(
@@ -10,11 +12,11 @@ data class MovieResponse(
     @SerializedName("total_results")
     val totalResults: Int
 )
-
+@Entity(tableName = "movie_table")
 data class Movie(
     @SerializedName("backdrop_path")
     val coverPath: String,
-    val genres: List<Genre>,
+    @PrimaryKey(autoGenerate = true)
     val id: Int,
     @SerializedName("original_title")
     val originalTitle: String,
