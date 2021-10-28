@@ -23,7 +23,7 @@ class MovieAdapter : ListAdapter<Movie, MovieAdapter.VH>(COMPARATOR) {
         holder.binding.root.setOnClickListener {
             onPosterClick.invoke(item)
         }
-        if (position == currentList.size - 1)
+        if (position == currentList.size - 2)
             isLastItem.invoke(true)
     }
 

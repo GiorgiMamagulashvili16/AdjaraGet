@@ -1,13 +1,16 @@
 package com.example.movieapp.presentation.movies_screen
 
+import android.content.Context
 import android.util.Log.d
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movieapp.models.MovieResponse
 import com.example.movieapp.repositories.MovieRepositoryImpl
 import com.example.movieapp.repositories.SavedMovieRepoImpl
+import com.example.movieapp.util.NetworkConnectionChecker
 import com.example.movieapp.util.ResponseHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MoviesViewModel @Inject constructor(
     private val movieRepo: MovieRepositoryImpl,
-    private val savedMovieRepo: SavedMovieRepoImpl
+    private val savedMovieRepo: SavedMovieRepoImpl,
+    @ApplicationContext app:Context
 ) : ViewModel(), SetChipState {
 
     private val _chipState = MutableStateFlow(buildVariantChipState)
@@ -27,6 +31,7 @@ class MoviesViewModel @Inject constructor(
     fun setChipState(state: ChipState) = viewModelScope.launch {
         _chipState.value = state
     }
+    val connectionChecker = NetworkConnectionChecker(app)
 
     private var topRatedMovieResponse: MovieResponse? = null
     private var popularMovieResponse: MovieResponse? = null
@@ -39,8 +44,9 @@ class MoviesViewModel @Inject constructor(
     private val _result = MutableStateFlow(MovieScreenState())
     val result: StateFlow<MovieScreenState> = _result
 
-    fun getMovies() = viewModelScope.launch {
+    fun getMovies() {
         currentPage++
+        d("currentPage", "$currentPage")
         when (_chipState.value) {
             is ChipState.TopRated -> {
                 fetchTopRatedMovies(currentPage)
@@ -83,6 +89,8 @@ class MoviesViewModel @Inject constructor(
                 _result.value = MovieScreenState(isLoading = false, error = response.errorMessage)
             }
         }
+
+
     }
 
     private fun fetchTopRatedMovies(page: Int) = viewModelScope.launch {

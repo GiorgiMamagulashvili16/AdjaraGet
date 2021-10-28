@@ -32,7 +32,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
     private val movieAdapter by lazy { MovieAdapter() }
     private var isLandscapeMode: Boolean = false
 
-    private var hasInternet: Boolean? = null
+    private var hasInternet: Boolean? = true
 
     private var isLastPage = false
 
@@ -44,12 +44,11 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
         setListeners()
         initRecycleView()
         observeResult()
-        if (hasInternet != true)
-            getMovies()
+        getMovies()
     }
 
     private fun observeNetworkConnection() {
-        NetworkConnectionChecker(requireContext()).observe(viewLifecycleOwner, { it ->
+        viewModel.connectionChecker.observe(viewLifecycleOwner, {
             hasInternet = it
             getMovies()
         })
@@ -70,7 +69,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
     }
 
     private fun observeResult() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.result.collect { state ->
                 if (!state.isLoading)
                     binding.progressBar.hide()
