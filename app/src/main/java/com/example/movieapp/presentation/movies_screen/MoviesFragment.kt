@@ -3,6 +3,7 @@ package com.example.movieapp.presentation.movies_screen
 import android.content.res.Configuration
 import android.util.Log.d
 import android.widget.AbsListView
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -75,7 +76,8 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                 else
                     binding.progressBar.show()
                 if (state.data != null) {
-                    binding.progressBar.hide()
+                    binding.tvEmpty.isVisible = state.data.isEmpty()
+                    d("ISEMPT", "${state.data.isEmpty()}")
                     movieAdapter.submitList(state.data)
 
                 }
@@ -91,7 +93,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
     }
 
     private fun initRecycleView() {
-        binding.rvMovies.apply {
+        with(binding.rvMovies) {
             layoutManager =
                 if (isLandscapeMode) GridLayoutManager(requireContext(), 3) else GridLayoutManager(
                     requireContext(),
@@ -99,7 +101,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                 )
             adapter = movieAdapter
         }
-
         movieAdapter.isLastItem = {
             if (it && !viewModel.isLastPage)
                 getMovies()

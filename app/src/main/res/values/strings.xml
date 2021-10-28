@@ -23,4 +23,5 @@
     <string name="go_to_saved">Go To Saved Movies</string>
     <string name="save">save</string>
     <string name="remove">remove</string>
+    <string name="you_have_not_saved_movies">You Have Not Saved Movies</string>
 </resources>
