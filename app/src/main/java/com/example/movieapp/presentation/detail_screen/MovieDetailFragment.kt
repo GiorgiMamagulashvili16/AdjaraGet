@@ -1,16 +1,9 @@
 package com.example.movieapp.presentation.detail_screen
 
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import coil.ImageLoader
-import coil.request.ImageRequest
-import coil.request.SuccessResult
-import com.bumptech.glide.Glide
 import com.example.movieapp.R
 import com.example.movieapp.databinding.MovieDetailFragmentBinding
 import com.example.movieapp.models.Genre
@@ -19,9 +12,9 @@ import com.example.movieapp.presentation.adapters.GenresAdapter
 import com.example.movieapp.presentation.base.BaseFragment
 import com.example.movieapp.presentation.extensions.loadImage
 import com.example.movieapp.util.Constants.IMAGE_URL
+import com.example.movieapp.util.drawable
 import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MovieDetailFragment :
@@ -30,15 +23,47 @@ class MovieDetailFragment :
     private val genreAdapter: GenresAdapter by lazy { GenresAdapter() }
     private val vm: MovieDetailViewModel by viewModels()
     private val args: MovieDetailFragmentArgs by navArgs()
-
-
     override fun initFragment() {
         val movie = args.movie
+        vm.isMovieSaved(movie.id)
         setDetailInfo(movie)
         setListeners()
         initGenreRecycle()
+        setFab()
+        setFabClickListener(movie)
+    }
+
+    private fun setFabClickListener(movie: Movie) {
         binding.fabSave.setOnClickListener {
-            vm.saveMovie(movie)
+            if (vm.isSavedMovie)
+                vm.removeMovie(movie.id)
+            else
+                vm.saveMovie(movie)
+            vm.isSavedMovie = !vm.isSavedMovie
+            setFab()
+        }
+    }
+
+    private fun setFab() {
+        val isSaved = vm.isSavedMovie
+        if (isSaved) {
+            setRemoveFab()
+        } else {
+            setSaveFab()
+        }
+    }
+
+    private fun setRemoveFab() {
+        binding.fabSave.apply {
+            text = getString(string.remove)
+            setIconResource(drawable.ic_remove)
+        }
+    }
+
+    private fun setSaveFab() {
+        binding.fabSave.apply {
+            text = getString(string.save)
+            setIconResource(drawable.ic_add)
         }
     }
 
@@ -46,6 +71,7 @@ class MovieDetailFragment :
         with(binding) {
             ivPoster.loadImage(IMAGE_URL + movie.poster_path)
             tvTitle.text = movie.title
+            ivCover?.loadImage(IMAGE_URL + movie.backdrop_path)
             tvOriginalTitle.text = movie.original_title
             tvOverview.text = movie.overview
             rbMovieRating.rating = movie.vote_average.toFloat() / 2
@@ -53,15 +79,6 @@ class MovieDetailFragment :
             tvReleaseDate.text =
                 getString(string.release_date_text, "Release Date:", movie.release_date)
         }
-    }
-
-    private suspend fun getBitmap(url: String): Bitmap {
-        val loader = ImageLoader(requireContext())
-        val request = ImageRequest.Builder(requireContext())
-            .data(url)
-            .build()
-        val result = (loader.execute(request) as SuccessResult).drawable
-        return (result as BitmapDrawable).bitmap
     }
 
     private fun setListeners() {

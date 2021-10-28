@@ -14,4 +14,10 @@ interface MovieDao {
 
     @Query("SELECT * FROM movies_table ORDER BY id DESC")
     fun getMovies(): List<Movie>
+
+    @Query("SELECT EXISTS(SELECT * FROM movies_table WHERE id = :id)")
+    fun isMovieSaved(id: Int): Boolean
+
+    @Query("DELETE FROM movies_table WHERE id = :id")
+    suspend fun removeMovieById(id: Int);
 }

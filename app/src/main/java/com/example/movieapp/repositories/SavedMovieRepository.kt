@@ -6,4 +6,6 @@ interface SavedMovieRepository {
 
     fun getAllMovies():List<Movie>
     suspend fun addMovie(movie: Movie)
+    fun isMovieSaved(id:Int):Boolean
+    suspend fun removeMovie(id:Int)
 }

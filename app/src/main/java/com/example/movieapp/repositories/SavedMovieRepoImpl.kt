@@ -14,4 +14,12 @@ class SavedMovieRepoImpl @Inject constructor(
     override suspend fun addMovie(movie: Movie) {
         dao.addMovie(movie)
     }
+
+    override fun isMovieSaved(id: Int): Boolean {
+        return dao.isMovieSaved(id)
+    }
+
+    override suspend fun removeMovie(id: Int) {
+        return dao.removeMovieById(id)
+    }
 }
