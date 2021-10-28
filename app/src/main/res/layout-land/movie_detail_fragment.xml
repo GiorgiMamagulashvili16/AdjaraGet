@@ -117,9 +117,12 @@
         android:layout_marginTop="5dp"
         android:fontFamily="@font/rubik_semi_bold"
         android:padding="5dp"
+        app:autoSizeMaxTextSize="18sp"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeStepGranularity="1dp"
         android:text="@string/overview"
         android:textColor="?attr/colorPrimaryVariant"
-        android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="@id/view"
         app:layout_constraintStart_toStartOf="@id/view"
         app:layout_constraintTop_toBottomOf="@id/rvGenres" />

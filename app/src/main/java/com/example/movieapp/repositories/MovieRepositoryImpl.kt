@@ -1,6 +1,8 @@
 package com.example.movieapp.repositories
 
+import android.util.Log.d
 import com.example.movieapp.models.Error
+import com.example.movieapp.models.Genre
 import com.example.movieapp.models.Movie
 import com.example.movieapp.models.MovieResponse
 import com.example.movieapp.network.MovieService
@@ -37,7 +39,7 @@ class MovieRepositoryImpl @Inject constructor(
             fetchData {
                 val response = movieService.getTopRatedMovies(page)
                 if (response.isSuccessful) {
-                    val body = response.body()!!
+                    val body = response.body()
                     ResponseHandler.Success(body)
                 } else {
                     val errorBody =

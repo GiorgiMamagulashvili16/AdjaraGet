@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log.d
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.movieapp.models.Genre
 import com.example.movieapp.models.MovieResponse
 import com.example.movieapp.repositories.MovieRepositoryImpl
 import com.example.movieapp.repositories.SavedMovieRepoImpl

@@ -28,7 +28,7 @@ class GenresAdapter : ListAdapter<Genre, GenresAdapter.VH>(COMPARATOR) {
 
     object COMPARATOR : DiffUtil.ItemCallback<Genre>() {
         override fun areItemsTheSame(oldItem: Genre, newItem: Genre): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.name == newItem.name
         }
 
         override fun areContentsTheSame(oldItem: Genre, newItem: Genre): Boolean {

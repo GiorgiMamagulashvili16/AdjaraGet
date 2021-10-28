@@ -1,5 +1,6 @@
 package com.example.movieapp.network
 
+import com.example.movieapp.models.Genre
 import com.example.movieapp.models.Movie
 import com.example.movieapp.models.MovieResponse
 import com.example.movieapp.util.Constants.API_KEY
@@ -27,4 +28,5 @@ interface MovieService {
         @Path("movie_id")
         movieId: Int
     ): Response<Movie>
+
 }

@@ -1,6 +1,8 @@
 package com.example.movieapp.presentation.detail_screen
 
+import android.util.Log.d
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +17,8 @@ import com.example.movieapp.util.Constants.IMAGE_URL
 import com.example.movieapp.util.drawable
 import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MovieDetailFragment :
@@ -27,6 +31,7 @@ class MovieDetailFragment :
         val movie = args.movie
         vm.isMovieSaved(movie.id)
         setDetailInfo(movie)
+        d("MOVIIE", "$movie")
         setListeners()
         initGenreRecycle()
         setFab()
@@ -78,9 +83,9 @@ class MovieDetailFragment :
             tvRating.text = movie.vote_average.toString()
             tvReleaseDate.text =
                 getString(string.release_date_text, "Release Date:", movie.release_date)
+
         }
     }
-
     private fun setListeners() {
         with(binding) {
             ibBack.setOnClickListener {
