@@ -34,7 +34,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
 
     private var hasInternet: Boolean? = true
 
-    private var isLastPage = false
 
     override fun initFragment() {
         observeNetworkConnection()
@@ -100,8 +99,9 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                 )
             adapter = movieAdapter
         }
+
         movieAdapter.isLastItem = {
-            if (it)
+            if (it && !viewModel.isLastPage)
                 getMovies()
         }
     }

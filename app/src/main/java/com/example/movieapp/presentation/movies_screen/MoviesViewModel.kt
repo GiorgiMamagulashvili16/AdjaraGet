@@ -23,7 +23,7 @@ import javax.inject.Inject
 class MoviesViewModel @Inject constructor(
     private val movieRepo: MovieRepositoryImpl,
     private val savedMovieRepo: SavedMovieRepoImpl,
-    @ApplicationContext app:Context
+    @ApplicationContext app: Context
 ) : ViewModel(), SetChipState {
 
     private val _chipState = MutableStateFlow(buildVariantChipState)
@@ -32,11 +32,15 @@ class MoviesViewModel @Inject constructor(
     fun setChipState(state: ChipState) = viewModelScope.launch {
         _chipState.value = state
     }
+
     val connectionChecker = NetworkConnectionChecker(app)
 
     private var topRatedMovieResponse: MovieResponse? = null
     private var popularMovieResponse: MovieResponse? = null
     var currentPage = 0
+    var lastPage = 1
+
+    var isLastPage = currentPage == lastPage
 
     fun changeCurrentPage(newValue: Int) = viewModelScope.launch {
         currentPage = newValue
@@ -81,6 +85,7 @@ class MoviesViewModel @Inject constructor(
                         oldList?.addAll(newList)
                     }
                 }
+                lastPage = popularMovieResponse?.totalPages!!
                 _result.value = MovieScreenState(
                     isLoading = false,
                     data = popularMovieResponse?.results ?: response.data!!.results
@@ -108,6 +113,7 @@ class MoviesViewModel @Inject constructor(
                         oldList?.addAll(newList)
                     }
                 }
+                lastPage = topRatedMovieResponse?.totalPages!!
                 _result.value = MovieScreenState(
                     isLoading = false,
                     data = topRatedMovieResponse?.results ?: response.data!!.results
