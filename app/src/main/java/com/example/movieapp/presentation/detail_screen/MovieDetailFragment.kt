@@ -24,9 +24,6 @@ class MovieDetailFragment :
     private val genreAdapter: GenresAdapter by lazy { GenresAdapter() }
     private val args: MovieDetailFragmentArgs by navArgs()
 
-    override fun onBindViewModel(viewModel: MovieDetailViewModel) {
-
-    }
 
     override fun inflateFragment(
         layoutInflater: LayoutInflater,
@@ -38,12 +35,37 @@ class MovieDetailFragment :
 
     override fun initFragment() {
         val movie = args.movie
+        viewModel.getMovie(movie)
         viewModel.isMovieSaved(movie.id)
-        setDetailInfo(movie)
         setListeners()
         initGenreRecycle()
         setFab()
         setFabClickListener(movie)
+    }
+
+    override fun onBindViewModel(viewModel: MovieDetailViewModel) {
+
+        viewModel.posterUrl.observe(viewLifecycleOwner, {
+            setPoster(it)
+        })
+        viewModel.title.observe(viewLifecycleOwner, {
+            setTitle(it)
+        })
+        viewModel.releaseDate.observe(viewLifecycleOwner, {
+            setReleaseDate(it)
+        })
+    }
+
+    private fun setPoster(url: String) {
+        binding.ivPoster.loadImage(url)
+    }
+
+    private fun setTitle(title: String) {
+        binding.tvTitle.text = title
+    }
+
+    private fun setReleaseDate(date: String) {
+        binding.tvReleaseDate.text = date
     }
 
     private fun setFabClickListener(movie: Movie) {

@@ -37,7 +37,7 @@ class MovieAdapter : ListAdapter<Movie, MovieAdapter.VH>(COMPARATOR) {
     class VH(val binding: RowMovieItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun onBind(movie: Movie) {
-            binding.root.loadImage(IMAGE_URL + movie.poster_path)
+            binding.root.loadImage(movie.getPosterUrl())
         }
     }
 
