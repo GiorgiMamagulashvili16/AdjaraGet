@@ -11,4 +11,7 @@ object Constants {
     const val NETWORK_CHECKER_URL = "https://www.google.com/"
 
     const val DB_NAME = "movie_db"
+
+    const val API_KEY_QUERY_PARAM = "api_key"
+
 }
