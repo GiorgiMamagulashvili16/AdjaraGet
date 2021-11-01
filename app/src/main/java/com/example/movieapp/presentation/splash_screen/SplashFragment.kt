@@ -1,5 +1,7 @@
 package com.example.movieapp.presentation.splash_screen
 
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -12,16 +14,10 @@ import com.example.movieapp.util.anim
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class SplashFragment : BaseFragment<SplashFragmentBinding>(SplashFragmentBinding::inflate) {
+class SplashFragment : BaseFragment<SplashFragmentBinding, SplashViewModel>() {
 
-    private val viewModel: SplashViewModel by viewModels()
-    override fun initFragment() {
-        binding.apply {
-            ivLogo.setAnim(LOGO_ANIM_DURATION, anim.logo_anim) {
-                viewModel.isAnimOver(true)
-            }
-        }
-        lifecycleScope.launch {
+    override fun onBindViewModel(viewModel: SplashViewModel) {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.moveToNextFragment.collect { isAnimationOver ->
                 if (isAnimationOver)
                     findNavController().navigate(R.id.action_splashFragment_to_moviesFragment)
@@ -29,4 +25,18 @@ class SplashFragment : BaseFragment<SplashFragmentBinding>(SplashFragmentBinding
         }
     }
 
+    override fun inflateFragment(
+        layoutInflater: LayoutInflater,
+        viewGroup: ViewGroup?
+    ): SplashFragmentBinding = SplashFragmentBinding.inflate(layoutInflater, viewGroup, false)
+
+    override fun getVmClass(): Class<SplashViewModel> = SplashViewModel::class.java
+
+    override fun initFragment() {
+        binding.apply {
+            ivLogo.setAnim(LOGO_ANIM_DURATION, anim.logo_anim) {
+                viewModel.isAnimOver(true)
+            }
+        }
+    }
 }

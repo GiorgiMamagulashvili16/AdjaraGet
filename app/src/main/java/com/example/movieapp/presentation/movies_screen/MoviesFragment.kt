@@ -2,6 +2,8 @@ package com.example.movieapp.presentation.movies_screen
 
 import android.content.res.Configuration
 import android.util.Log.d
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.AbsListView
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
@@ -26,9 +28,15 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding::inflate) {
+class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
 
-    private val viewModel: MoviesViewModel by activityViewModels()
+    override fun inflateFragment(
+        layoutInflater: LayoutInflater,
+        viewGroup: ViewGroup?
+    ): MoviesFragmentBinding = MoviesFragmentBinding.inflate(layoutInflater, viewGroup, false)
+
+    override fun getVmClass(): Class<MoviesViewModel> = MoviesViewModel::class.java
+
 
     private val movieAdapter by lazy { MovieAdapter() }
     private var isLandscapeMode: Boolean = false
@@ -45,6 +53,10 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
         initRecycleView()
         observeResult()
         getMovies()
+    }
+
+    override fun onBindViewModel(viewModel: MoviesViewModel) {
+
     }
 
     private fun observeNetworkConnection() {
@@ -100,10 +112,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                     2
                 )
             adapter = movieAdapter
-        }
-        movieAdapter.isLastItem = {
-            if (it && !viewModel.isLastPage)
-                getMovies()
+            addOnScrollListener(OnScrollListener({ getMovies() }, viewModel.isLastPage))
         }
     }
 
@@ -174,4 +183,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
             }
         }
     }
+
+
 }

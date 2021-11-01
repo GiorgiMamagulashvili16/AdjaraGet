@@ -15,7 +15,6 @@ import com.example.movieapp.util.onPosterClick
 class MovieAdapter : ListAdapter<Movie, MovieAdapter.VH>(COMPARATOR) {
 
     lateinit var onPosterClick: onPosterClick
-    lateinit var isLastItem: IsLastItem
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         val item = getItem(position)
@@ -23,8 +22,6 @@ class MovieAdapter : ListAdapter<Movie, MovieAdapter.VH>(COMPARATOR) {
         holder.binding.root.setOnClickListener {
             onPosterClick.invoke(item)
         }
-        if (position == currentList.size - 2)
-            isLastItem.invoke(true)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {

@@ -1,7 +1,10 @@
 package com.example.movieapp.presentation.detail_screen
 
 import android.util.Log.d
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -22,16 +25,27 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MovieDetailFragment :
-    BaseFragment<MovieDetailFragmentBinding>(MovieDetailFragmentBinding::inflate) {
+    BaseFragment<MovieDetailFragmentBinding, MovieDetailViewModel>() {
 
     private val genreAdapter: GenresAdapter by lazy { GenresAdapter() }
-    private val vm: MovieDetailViewModel by viewModels()
     private val args: MovieDetailFragmentArgs by navArgs()
+
+    override fun onBindViewModel(viewModel: MovieDetailViewModel) {
+
+    }
+
+    override fun inflateFragment(
+        layoutInflater: LayoutInflater,
+        viewGroup: ViewGroup?
+    ): MovieDetailFragmentBinding =
+        MovieDetailFragmentBinding.inflate(layoutInflater, viewGroup, false)
+
+    override fun getVmClass(): Class<MovieDetailViewModel> = MovieDetailViewModel::class.java
+
     override fun initFragment() {
         val movie = args.movie
-        vm.isMovieSaved(movie.id)
+        viewModel.isMovieSaved(movie.id)
         setDetailInfo(movie)
-        d("MOVIIE", "$movie")
         setListeners()
         initGenreRecycle()
         setFab()
@@ -40,17 +54,17 @@ class MovieDetailFragment :
 
     private fun setFabClickListener(movie: Movie) {
         binding.fabSave.setOnClickListener {
-            if (vm.isSavedMovie)
-                vm.removeMovie(movie.id)
+            if (viewModel.isSavedMovie)
+                viewModel.removeMovie(movie.id)
             else
-                vm.saveMovie(movie)
-            vm.isSavedMovie = !vm.isSavedMovie
+                viewModel.saveMovie(movie)
+            viewModel.isSavedMovie = !viewModel.isSavedMovie
             setFab()
         }
     }
 
     private fun setFab() {
-        val isSaved = vm.isSavedMovie
+        val isSaved = viewModel.isSavedMovie
         if (isSaved) {
             setRemoveFab()
         } else {
@@ -86,6 +100,7 @@ class MovieDetailFragment :
 
         }
     }
+
     private fun setListeners() {
         with(binding) {
             ibBack.setOnClickListener {
