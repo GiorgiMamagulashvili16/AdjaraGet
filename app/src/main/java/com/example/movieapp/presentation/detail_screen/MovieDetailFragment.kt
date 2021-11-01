@@ -1,5 +1,6 @@
 package com.example.movieapp.presentation.detail_screen
 
+import android.util.Log.d
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -8,14 +9,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movieapp.R
 import com.example.movieapp.databinding.MovieDetailFragmentBinding
 import com.example.movieapp.models.Genre
-import com.example.movieapp.models.MovieDetailResponse
+import com.example.movieapp.models.Movie
 import com.example.movieapp.presentation.adapters.GenresAdapter
 import com.example.movieapp.presentation.base.BaseFragment
 import com.example.movieapp.presentation.extensions.loadImage
 import com.example.movieapp.util.Constants.IMAGE_URL
+import com.example.movieapp.util.drawable
 import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MovieDetailFragment :
@@ -24,52 +27,65 @@ class MovieDetailFragment :
     private val genreAdapter: GenresAdapter by lazy { GenresAdapter() }
     private val vm: MovieDetailViewModel by viewModels()
     private val args: MovieDetailFragmentArgs by navArgs()
-
-
     override fun initFragment() {
-        vm.getMovieById(args.movieId)
+        val movie = args.movie
+        vm.isMovieSaved(movie.id)
+        setDetailInfo(movie)
+        d("MOVIIE", "$movie")
         setListeners()
         initGenreRecycle()
-        observeData()
+        setFab()
+        setFabClickListener(movie)
     }
 
-    private fun observeData() {
-        lifecycleScope.launchWhenCreated {
-            vm.result.collect { state ->
-                if (state.isLoading)
-                    showLoadingDialog()
-                else
-                    dismissLoadingDialog()
-                if (state.error != null)
-                    showErrorDialog(state.error, onRetryClick = {
-                        vm.getMovieById(args.movieId)
-                        dismissErrorDialog()
-                    })
-                if (state.data != null)
-                    setDetailInfo(state.data)
-            }
+    private fun setFabClickListener(movie: Movie) {
+        binding.fabSave.setOnClickListener {
+            if (vm.isSavedMovie)
+                vm.removeMovie(movie.id)
+            else
+                vm.saveMovie(movie)
+            vm.isSavedMovie = !vm.isSavedMovie
+            setFab()
         }
     }
 
-    private fun setDetailInfo(movie: MovieDetailResponse) {
+    private fun setFab() {
+        val isSaved = vm.isSavedMovie
+        if (isSaved) {
+            setRemoveFab()
+        } else {
+            setSaveFab()
+        }
+    }
+
+    private fun setRemoveFab() {
+        binding.fabSave.apply {
+            text = getString(string.remove)
+            setIconResource(drawable.ic_remove)
+        }
+    }
+
+    private fun setSaveFab() {
+        binding.fabSave.apply {
+            text = getString(string.save)
+            setIconResource(drawable.ic_add)
+        }
+    }
+
+    private fun setDetailInfo(movie: Movie) {
         with(binding) {
-            ivPoster.loadImage(IMAGE_URL + movie.posterPath)
+            ivPoster.loadImage(IMAGE_URL + movie.poster_path)
             tvTitle.text = movie.title
-            tvOriginalTitle.text = movie.originalTitle
+            ivCover?.loadImage(IMAGE_URL + movie.backdrop_path)
+            tvOriginalTitle.text = movie.original_title
             tvOverview.text = movie.overview
-            ivCover?.apply {
-                clipToOutline = true
-                loadImage(IMAGE_URL + movie.coverPath)
-            }
-            rbMovieRating.rating = movie.rating.toFloat() / 2
-            tvRating.text = movie.rating.toString()
-            setGenres(movie.genres)
+            rbMovieRating.rating = movie.vote_average.toFloat() / 2
+            tvRating.text = movie.vote_average.toString()
             tvReleaseDate.text =
-                getString(string.release_date_text, "Release Date:", movie.releaseDate)
+                getString(string.release_date_text, "Release Date:", movie.release_date)
+
         }
     }
-
-
     private fun setListeners() {
         with(binding) {
             ibBack.setOnClickListener {
