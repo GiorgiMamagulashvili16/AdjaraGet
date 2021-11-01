@@ -45,21 +45,20 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
 
 
     override fun initFragment() {
-        observeNetworkConnection()
         getScreenOrientationInfo()
-        setChipsValue()
         chipSelect()
         setListeners()
         initRecycleView()
-        observeResult()
         getMovies()
     }
 
     override fun onBindViewModel(viewModel: MoviesViewModel) {
-
+        observeResult(viewModel)
+        setChipsValue(viewModel)
+        observeNetworkConnection(viewModel)
     }
 
-    private fun observeNetworkConnection() {
+    private fun observeNetworkConnection(viewModel: MoviesViewModel) {
         viewModel.connectionChecker.observe(viewLifecycleOwner, {
             hasInternet = it
             getMovies()
@@ -80,7 +79,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
             isLandscapeMode = true
     }
 
-    private fun observeResult() {
+    private fun observeResult(viewModel: MoviesViewModel) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.result.collect { state ->
                 if (!state.isLoading)
@@ -89,7 +88,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
                     binding.progressBar.show()
                 if (state.data != null) {
                     binding.tvEmpty.isVisible = state.data.isEmpty()
-                    d("ISEMPT", "${state.data.isEmpty()}")
                     movieAdapter.submitList(state.data)
 
                 }
@@ -99,7 +97,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
                         viewModel.getMovies()
                     })
                 }
-
             }
         }
     }
@@ -123,7 +120,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
         }
     }
 
-    private fun setChipsValue() {
+    private fun setChipsValue(viewModel: MoviesViewModel) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.chipState.collect { state ->
                 when (state) {
@@ -169,7 +166,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
             }
             null -> {
                 binding.progressBar.show()
-                observeNetworkConnection()
+                observeNetworkConnection(viewModel)
             }
             false -> {
                 binding.progressBar.hide()

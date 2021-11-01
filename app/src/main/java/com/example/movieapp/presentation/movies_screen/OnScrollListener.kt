@@ -25,7 +25,7 @@ class OnScrollListener(val call: () -> Unit, val isLastPage: Boolean) :
 
         val isAtLastItem = firstItemPosition + visibleItems >= totalItems
         val isNotAtStart = firstItemPosition >= 0
-        val isTotalThanVisible = totalItems >= 10
+        val isTotalThanVisible = totalItems >= 20
         val paginate =
             isNotAtStart && isAtLastItem && isNotAtStart && isTotalThanVisible && isScrolling && !isLastPage
         if (paginate) {

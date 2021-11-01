@@ -1,11 +1,7 @@
 package com.example.movieapp.presentation.detail_screen
 
-import android.util.Log.d
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,8 +16,6 @@ import com.example.movieapp.util.Constants.IMAGE_URL
 import com.example.movieapp.util.drawable
 import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MovieDetailFragment :
