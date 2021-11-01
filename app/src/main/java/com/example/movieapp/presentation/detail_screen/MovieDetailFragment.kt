@@ -1,7 +1,9 @@
 package com.example.movieapp.presentation.detail_screen
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,26 +48,29 @@ class MovieDetailFragment :
     override fun onBindViewModel(viewModel: MovieDetailViewModel) {
 
         viewModel.posterUrl.observe(viewLifecycleOwner, {
-            setPoster(it)
+            binding.ivPoster.loadImage(it)
         })
         viewModel.title.observe(viewLifecycleOwner, {
-            setTitle(it)
+            binding.tvTitle.text = it
         })
         viewModel.releaseDate.observe(viewLifecycleOwner, {
-            setReleaseDate(it)
+            binding.tvReleaseDate.text = it
         })
-    }
-
-    private fun setPoster(url: String) {
-        binding.ivPoster.loadImage(url)
-    }
-
-    private fun setTitle(title: String) {
-        binding.tvTitle.text = title
-    }
-
-    private fun setReleaseDate(date: String) {
-        binding.tvReleaseDate.text = date
+        viewModel.coverUrl.observe(viewLifecycleOwner, {
+            binding.ivCover?.loadImage(it)
+        })
+        viewModel.originalTitle.observe(viewLifecycleOwner, {
+            binding.tvOriginalTitle.text = it
+        })
+        viewModel.movieRating.observe(viewLifecycleOwner, {
+            binding.tvRating.text = it
+        })
+        viewModel.rating.observe(viewLifecycleOwner, {
+            binding.rbMovieRating.rating = it
+        })
+        viewModel.overView.observe(viewLifecycleOwner, {
+            binding.tvOverview.text = it
+        })
     }
 
     private fun setFabClickListener(movie: Movie) {
@@ -99,21 +104,6 @@ class MovieDetailFragment :
         binding.fabSave.apply {
             text = getString(string.save)
             setIconResource(drawable.ic_add)
-        }
-    }
-
-    private fun setDetailInfo(movie: Movie) {
-        with(binding) {
-            ivPoster.loadImage(IMAGE_URL + movie.poster_path)
-            tvTitle.text = movie.title
-            ivCover?.loadImage(IMAGE_URL + movie.backdrop_path)
-            tvOriginalTitle.text = movie.original_title
-            tvOverview.text = movie.overview
-            rbMovieRating.rating = movie.vote_average.toFloat() / 2
-            tvRating.text = movie.vote_average.toString()
-            tvReleaseDate.text =
-                getString(string.release_date_text, "Release Date:", movie.release_date)
-
         }
     }
 

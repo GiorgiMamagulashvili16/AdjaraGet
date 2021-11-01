@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class OnScrollListener(val call: () -> Unit, val isLastPage: Boolean) :
     RecyclerView.OnScrollListener() {
+
     var isScrolling = false
 
     override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
