@@ -1,9 +1,8 @@
 package com.example.movieapp.presentation.detail_screen
 
-import android.content.Context
+import android.util.Log.d
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,7 +13,7 @@ import com.example.movieapp.models.Movie
 import com.example.movieapp.presentation.adapters.GenresAdapter
 import com.example.movieapp.presentation.base.BaseFragment
 import com.example.movieapp.presentation.extensions.loadImage
-import com.example.movieapp.util.Constants.IMAGE_URL
+import com.example.movieapp.presentation.extensions.observeData
 import com.example.movieapp.util.drawable
 import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
@@ -71,6 +70,9 @@ class MovieDetailFragment :
         viewModel.overView.observe(viewLifecycleOwner, {
             binding.tvOverview.text = it
         })
+        observeData(viewModel.title){
+            d("OBSERVEDDATA", it)
+        }
     }
 
     private fun setFabClickListener(movie: Movie) {
@@ -128,3 +130,5 @@ class MovieDetailFragment :
         genreAdapter.submitList(genres)
     }
 }
+
+
