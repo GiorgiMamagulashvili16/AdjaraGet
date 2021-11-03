@@ -63,14 +63,17 @@ class MovieDetailFragment :
     }
 
     private fun setFabClickListener(movie: Movie, viewModel: MovieDetailViewModel) {
-        binding.fabSave.setOnClickListener {
-            if (viewModel.isSavedMovie)
-                viewModel.removeMovie(movie.id)
-            else
-                viewModel.saveMovie(movie)
-            viewModel.isSavedMovie = !viewModel.isSavedMovie
-            setFab(viewModel)
+        observeData(viewModel.isMovieSaved) { isMovieSaved ->
+            binding.fabSave.setOnClickListener {
+                if (isMovieSaved)
+                    viewModel.removeMovie(movie.id)
+                else
+                    viewModel.saveMovie(movie)
+                viewModel.changeIsMovieSaved(!isMovieSaved)
+                setFab(viewModel)
+            }
         }
+
     }
 
     private fun setFab(viewModel: MovieDetailViewModel) {

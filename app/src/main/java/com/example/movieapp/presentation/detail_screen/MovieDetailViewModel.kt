@@ -69,7 +69,9 @@ class MovieDetailViewModel @Inject constructor(
         _overView.postValue(movie.overview)
         _posterUrl.postValue(movie.getPosterUrl())
     }
-
+    fun changeIsMovieSaved(newValue :Boolean) = viewModelScope.launch {
+        _isMovieSaved.postValue(newValue)
+    }
     fun saveMovie(movie: Movie) = viewModelScope.launch {
         withContext(Dispatchers.IO) {
             savedMovieRepo.addMovie(movie)
