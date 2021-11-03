@@ -49,7 +49,6 @@ class MovieDetailViewModel @Inject constructor(
 
     fun setMovie(movie: Movie) = viewModelScope.launch {
         _movie.postValue(movie)
-        d("VIEWMODELMOVIE", "$movie")
         setMovieDetails(movie)
     }
 

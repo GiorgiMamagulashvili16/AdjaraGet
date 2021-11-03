@@ -1,10 +1,8 @@
 package com.example.movieapp.presentation.extensions
 
-import android.app.Dialog
-import android.content.Context
+import android.content.res.Configuration
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
-import com.example.movieapp.databinding.DialogErrorBinding
 import com.google.android.material.snackbar.Snackbar
 
 fun Fragment.createSnackBar(message: String, color: Int) {
@@ -17,3 +15,9 @@ fun <T> Fragment.observeData(liveData: LiveData<T>, observer: (it: T) -> Unit) {
     liveData.observe(this.viewLifecycleOwner, { observer(it) })
 }
 
+fun Fragment.isLandScape(): Boolean {
+    val orientation = requireActivity().resources.configuration.orientation
+    if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+        return true
+    return false
+}

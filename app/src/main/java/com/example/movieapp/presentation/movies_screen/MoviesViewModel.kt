@@ -1,6 +1,8 @@
 package com.example.movieapp.presentation.movies_screen
 
 import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movieapp.models.MovieResponse
@@ -27,17 +29,30 @@ class MoviesViewModel @Inject constructor(
     private val _chipState = MutableStateFlow(buildVariantChipState)
     val chipState: StateFlow<ChipState> = _chipState
 
+    private val _isLandscape: MutableLiveData<Boolean> = MutableLiveData()
+    val isLandscape: LiveData<Boolean> = _isLandscape
+
+    private val _hasInternetConnection = MutableStateFlow<Boolean?>(null)
+    val hasInternetConnection: StateFlow<Boolean?> = _hasInternetConnection
+
+    fun setInternetConnection(newValue: Boolean) = viewModelScope.launch {
+        _hasInternetConnection.value = newValue
+    }
     fun setChipState(state: ChipState) = viewModelScope.launch {
         _chipState.value = state
     }
 
+    fun setLandScape(newValue: Boolean) = viewModelScope.launch {
+        _isLandscape.postValue(newValue)
+    }
+
     val connectionChecker = NetworkConnectionChecker(app)
-    var hasInternetConnection: Boolean? = null
+
     private var topRatedMovieResponse: MovieResponse? = null
     private var popularMovieResponse: MovieResponse? = null
     private var currentPage = 0
     private var lastPage = 1
-    var isLandScape = false
+
     var isLastPage = currentPage == lastPage
 
     fun changeCurrentPage(newValue: Int) = viewModelScope.launch {
