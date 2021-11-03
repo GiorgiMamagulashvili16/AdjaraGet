@@ -1,19 +1,15 @@
 package com.example.movieapp.presentation.detail_screen
 
-import android.util.Log.d
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movieapp.R
 import com.example.movieapp.databinding.MovieDetailFragmentBinding
-import com.example.movieapp.models.Genre
 import com.example.movieapp.models.Movie
 import com.example.movieapp.presentation.adapters.GenresAdapter
 import com.example.movieapp.presentation.base.BaseFragment
 import com.example.movieapp.presentation.extensions.loadImage
 import com.example.movieapp.presentation.extensions.observeData
+import com.example.movieapp.util.Inflate
 import com.example.movieapp.util.drawable
 import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,71 +18,72 @@ import dagger.hilt.android.AndroidEntryPoint
 class MovieDetailFragment :
     BaseFragment<MovieDetailFragmentBinding, MovieDetailViewModel>() {
 
-    private val genreAdapter: GenresAdapter by lazy { GenresAdapter() }
     private val args: MovieDetailFragmentArgs by navArgs()
-
-
-    override fun inflateFragment(
-        layoutInflater: LayoutInflater,
-        viewGroup: ViewGroup?
-    ): MovieDetailFragmentBinding =
-        MovieDetailFragmentBinding.inflate(layoutInflater, viewGroup, false)
+    override fun inflateFragment(): Inflate<MovieDetailFragmentBinding> =
+        MovieDetailFragmentBinding::inflate
 
     override fun getVmClass(): Class<MovieDetailViewModel> = MovieDetailViewModel::class.java
 
     override fun initFragment() {
-        val movie = args.movie
-        viewModel.getMovie(movie)
-        viewModel.isMovieSaved(movie.id)
-        setListeners()
-        initGenreRecycle()
-        setFab()
-        setFabClickListener(movie)
     }
 
     override fun onBindViewModel(viewModel: MovieDetailViewModel) {
+        val movie = args.movie
+        viewModel.setMovie(movie)
 
-        viewModel.posterUrl.observe(viewLifecycleOwner, {
-            binding.ivPoster.loadImage(it)
-        })
-        viewModel.title.observe(viewLifecycleOwner, {
-            binding.tvTitle.text = it
-        })
-        viewModel.releaseDate.observe(viewLifecycleOwner, {
-            binding.tvReleaseDate.text = it
-        })
-        viewModel.coverUrl.observe(viewLifecycleOwner, {
-            binding.ivCover?.loadImage(it)
-        })
-        viewModel.originalTitle.observe(viewLifecycleOwner, {
-            binding.tvOriginalTitle.text = it
-        })
-        viewModel.movieRating.observe(viewLifecycleOwner, {
-            binding.tvRating.text = it
-        })
-        viewModel.rating.observe(viewLifecycleOwner, {
-            binding.rbMovieRating.rating = it
-        })
-        viewModel.overView.observe(viewLifecycleOwner, {
-            binding.tvOverview.text = it
-        })
-        observeData(viewModel.title){
-            d("OBSERVEDDATA", it)
+        with(viewModel) {
+            with(binding) {
+                observeData(title) {
+                    tvTitle.text = it
+                }
+                observeData(originalTitle) {
+                    tvOriginalTitle.text = it
+                }
+                observeData(releaseDate) {
+                    tvReleaseDate.text = it
+                }
+                observeData(coverUrl) {
+                    ivCover?.loadImage(it)
+                }
+                observeData(posterUrl) {
+                    ivPoster.loadImage(it)
+                }
+                observeData(movieRating) {
+                    tvRating.text = it
+                }
+                observeData(rating) {
+                    rbMovieRating.rating = it
+                }
+                observeData(overView) {
+                    tvOverview.text = it
+                }
+            }
+        }
+        observeMovie(viewModel)
+        setFab(viewModel)
+    }
+
+    private fun observeMovie(viewModel: MovieDetailViewModel) {
+        with(viewModel) {
+            observeData(movie) {
+                setFabClickListener(it, viewModel)
+                isMovieSaved(it.id)
+            }
         }
     }
 
-    private fun setFabClickListener(movie: Movie) {
+    private fun setFabClickListener(movie: Movie, viewModel: MovieDetailViewModel) {
         binding.fabSave.setOnClickListener {
             if (viewModel.isSavedMovie)
                 viewModel.removeMovie(movie.id)
             else
                 viewModel.saveMovie(movie)
             viewModel.isSavedMovie = !viewModel.isSavedMovie
-            setFab()
+            setFab(viewModel)
         }
     }
 
-    private fun setFab() {
+    private fun setFab(viewModel: MovieDetailViewModel) {
         val isSaved = viewModel.isSavedMovie
         if (isSaved) {
             setRemoveFab()
@@ -108,27 +105,15 @@ class MovieDetailFragment :
             setIconResource(drawable.ic_add)
         }
     }
-
-    private fun setListeners() {
+    override fun setListeners() {
         with(binding) {
             ibBack.setOnClickListener {
                 findNavController().navigate(R.id.action_movieDetailFragment_to_moviesFragment)
             }
-            ivPoster.clipToOutline = true
         }
     }
 
-    private fun initGenreRecycle() {
-        binding.rvGenres.apply {
-            layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            adapter = genreAdapter
-        }
-    }
 
-    private fun setGenres(genres: List<Genre>) {
-        genreAdapter.submitList(genres)
-    }
 }
 
 

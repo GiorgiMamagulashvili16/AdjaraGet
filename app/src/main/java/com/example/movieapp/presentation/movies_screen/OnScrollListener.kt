@@ -3,8 +3,9 @@ package com.example.movieapp.presentation.movies_screen
 import android.widget.AbsListView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.movieapp.util.Constants.DEFAULT_ITEM_INDEX
 
-class OnScrollListener(val call: () -> Unit, val isLastPage: Boolean) :
+class OnScrollListener(val call: () -> Unit, val isLastPage: Boolean,val pageSize:Int) :
     RecyclerView.OnScrollListener() {
 
     var isScrolling = false
@@ -25,8 +26,8 @@ class OnScrollListener(val call: () -> Unit, val isLastPage: Boolean) :
         val totalItems = layoutManager.itemCount
 
         val isAtLastItem = firstItemPosition + visibleItems >= totalItems
-        val isNotAtStart = firstItemPosition >= 0
-        val isTotalThanVisible = totalItems >= 20
+        val isNotAtStart = firstItemPosition >= DEFAULT_ITEM_INDEX
+        val isTotalThanVisible = totalItems >= pageSize
         val paginate =
             isNotAtStart && isAtLastItem && isNotAtStart && isTotalThanVisible && isScrolling && !isLastPage
         if (paginate) {

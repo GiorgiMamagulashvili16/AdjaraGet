@@ -1,10 +1,8 @@
 package com.example.movieapp.presentation.movies_screen
 
 import android.content.Context
-import android.util.Log.d
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.movieapp.models.Genre
 import com.example.movieapp.models.MovieResponse
 import com.example.movieapp.repositories.MovieRepositoryImpl
 import com.example.movieapp.repositories.SavedMovieRepoImpl
@@ -34,11 +32,11 @@ class MoviesViewModel @Inject constructor(
     }
 
     val connectionChecker = NetworkConnectionChecker(app)
-
+    var hasInternetConnection: Boolean? = null
     private var topRatedMovieResponse: MovieResponse? = null
     private var popularMovieResponse: MovieResponse? = null
-    var currentPage = 0
-    var lastPage = 1
+    private var currentPage = 0
+    private var lastPage = 1
 
     var isLastPage = currentPage == lastPage
 
@@ -51,7 +49,6 @@ class MoviesViewModel @Inject constructor(
 
     fun getMovies() {
         currentPage++
-        d("currentPage", "$currentPage")
         when (_chipState.value) {
             is ChipState.TopRated -> {
                 fetchTopRatedMovies(currentPage)

@@ -1,8 +1,5 @@
 package com.example.movieapp.presentation.splash_screen
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.movieapp.R
@@ -10,6 +7,7 @@ import com.example.movieapp.databinding.SplashFragmentBinding
 import com.example.movieapp.presentation.base.BaseFragment
 import com.example.movieapp.presentation.extensions.setAnim
 import com.example.movieapp.util.Constants.LOGO_ANIM_DURATION
+import com.example.movieapp.util.Inflate
 import com.example.movieapp.util.anim
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -25,10 +23,6 @@ class SplashFragment : BaseFragment<SplashFragmentBinding, SplashViewModel>() {
         }
     }
 
-    override fun inflateFragment(
-        layoutInflater: LayoutInflater,
-        viewGroup: ViewGroup?
-    ): SplashFragmentBinding = SplashFragmentBinding.inflate(layoutInflater, viewGroup, false)
 
     override fun getVmClass(): Class<SplashViewModel> = SplashViewModel::class.java
 
@@ -39,4 +33,7 @@ class SplashFragment : BaseFragment<SplashFragmentBinding, SplashViewModel>() {
             }
         }
     }
+
+    override fun setListeners() {}
+    override fun inflateFragment(): Inflate<SplashFragmentBinding> = SplashFragmentBinding::inflate
 }

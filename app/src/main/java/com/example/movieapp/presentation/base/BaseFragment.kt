@@ -12,7 +12,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import com.example.movieapp.databinding.DialogErrorBinding
 import com.example.movieapp.databinding.DialogLoadingBinding
+import com.example.movieapp.presentation.extensions.dismissDialog
 import com.example.movieapp.presentation.extensions.setDialog
+import com.example.movieapp.presentation.extensions.showError
 import com.example.movieapp.util.Inflate
 import com.example.movieapp.util.NetworkConnectionChecker
 import com.example.movieapp.util.string
@@ -37,7 +39,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>() : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = inflateFragment(layoutInflater, container)
+        _binding = inflateFragment().invoke(layoutInflater, container, false)
         return binding.root
     }
 
@@ -45,34 +47,27 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>() : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initFragment()
         onBindViewModel(viewModel)
+        setListeners()
     }
 
 
-    abstract fun inflateFragment(layoutInflater: LayoutInflater, viewGroup: ViewGroup?): VB
+    abstract fun inflateFragment(): Inflate<VB>
     abstract fun getVmClass(): Class<VM>
     abstract fun initFragment()
     abstract fun onBindViewModel(viewModel: VM)
+    abstract fun setListeners()
 
     protected fun showErrorDialog(
         message: String,
         onRetryClick: () -> Unit,
-        btnText: String = getString(string.retry)
+        btnText: String = getString(string.retry),
     ) {
         errorDialog = Dialog(requireContext())
-        val binding = DialogErrorBinding.inflate(layoutInflater)
-        errorDialog!!.setDialog(binding)
-        with(binding) {
-            btnRetry.text = btnText
-            btnRetry.setOnClickListener {
-                onRetryClick()
-            }
-            tvErrorText.text = message
-        }
-        errorDialog?.show()
+        errorDialog!!.showError(message, onRetryClick, btnText)
     }
 
     protected fun dismissErrorDialog() {
-        errorDialog?.hide()
+        errorDialog?.dismissDialog()
     }
 
     override fun onDestroyView() {

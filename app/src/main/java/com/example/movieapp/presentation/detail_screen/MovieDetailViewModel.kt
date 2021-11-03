@@ -44,23 +44,26 @@ class MovieDetailViewModel @Inject constructor(
     val movieRating: LiveData<String> = _movieRating
 
 
-    fun getMovie(movie: Movie) = viewModelScope.launch {
+    fun setMovie(movie: Movie) = viewModelScope.launch {
         _movie.postValue(movie)
-        _coverUrl.postValue(movie.getBackDropUrl())
-        _movieRating.postValue(movie.vote_average.toString())
-        _originalTitle.postValue(movie.original_title)
-        _title.postValue(movie.title)
-        _rating.postValue(movie.vote_average.toFloat() / 2)
+        setMovieDetails()
+    }
+
+    private fun setMovieDetails() = viewModelScope.launch {
+        _coverUrl.postValue(_movie.value?.getBackDropUrl())
+        _movieRating.postValue(_movie.value?.vote_average.toString())
+        _originalTitle.postValue(_movie.value?.original_title)
+        _title.postValue(_movie.value?.title)
+        _rating.postValue(_movie.value?.vote_average?.toFloat()?.div(2))
         _releaseDate.postValue(
             resourcesProvider.getString(
                 string.release_date_text,
                 "Release Date: ",
-                movie.release_date
+                _movie.value?.release_date
             )
         )
-        _overView.postValue(movie.overview)
-        _posterUrl.postValue(movie.getPosterUrl())
-
+        _overView.postValue(_movie.value?.overview)
+        _posterUrl.postValue(_movie.value?.getPosterUrl())
     }
 
     fun saveMovie(movie: Movie) = viewModelScope.launch {

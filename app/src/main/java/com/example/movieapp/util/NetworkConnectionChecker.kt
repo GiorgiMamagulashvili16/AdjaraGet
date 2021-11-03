@@ -7,13 +7,7 @@ import android.net.Network
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
 import androidx.lifecycle.LiveData
-import com.example.movieapp.di.NetworkModule.BASE_URL
 import com.example.movieapp.util.Constants.NETWORK_CHECKER_URL
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.lang.Exception
 import java.net.URL
 
 class NetworkConnectionChecker(context: Context) : LiveData<Boolean>() {

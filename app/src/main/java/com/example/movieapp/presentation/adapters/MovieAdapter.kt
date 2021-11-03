@@ -8,8 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.movieapp.databinding.RowMovieItemBinding
 import com.example.movieapp.models.Movie
 import com.example.movieapp.presentation.extensions.loadImage
-import com.example.movieapp.util.Constants.IMAGE_URL
-import com.example.movieapp.util.IsLastItem
 import com.example.movieapp.util.onPosterClick
 
 class MovieAdapter : ListAdapter<Movie, MovieAdapter.VH>(COMPARATOR) {
@@ -18,10 +16,7 @@ class MovieAdapter : ListAdapter<Movie, MovieAdapter.VH>(COMPARATOR) {
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         val item = getItem(position)
-        holder.onBind(item!!)
-        holder.binding.root.setOnClickListener {
-            onPosterClick.invoke(item)
-        }
+        holder.onBind(item, onPosterClick)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -36,8 +31,14 @@ class MovieAdapter : ListAdapter<Movie, MovieAdapter.VH>(COMPARATOR) {
 
     class VH(val binding: RowMovieItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun onBind(movie: Movie) {
-            binding.root.loadImage(movie.getPosterUrl())
+        fun onBind(movie: Movie, onPosterClick: onPosterClick) {
+
+            with(binding.root) {
+                loadImage(movie.getPosterUrl())
+                setOnClickListener {
+                    onPosterClick.invoke(movie)
+                }
+            }
         }
     }
 
