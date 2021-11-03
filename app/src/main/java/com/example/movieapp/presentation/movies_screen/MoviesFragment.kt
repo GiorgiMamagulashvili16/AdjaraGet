@@ -29,39 +29,35 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
     override fun inflateFragment(): Inflate<MoviesFragmentBinding> = MoviesFragmentBinding::inflate
 
     private val movieAdapter by lazy { MovieAdapter() }
-    private var isLandscapeMode: Boolean = false
-
-    override fun initFragment() {}
 
     override fun onBindViewModel(viewModel: MoviesViewModel) {
-        getMovies()
+        getMovies(viewModel)
         observeResult(viewModel)
         setChipsValue(viewModel)
         observeNetworkConnection(viewModel)
         chipSelect(viewModel)
-        getScreenOrientationInfo()
-        initRecycleView()
+        getScreenOrientationInfo(viewModel)
+        initRecycleView(viewModel)
     }
 
     private fun observeNetworkConnection(viewModel: MoviesViewModel) {
         viewModel.connectionChecker.observe(viewLifecycleOwner, {
             viewModel.hasInternetConnection = it
-            getMovies()
+            getMovies(viewModel)
         })
         viewLifecycleOwner.lifecycleScope.launch {
             delay(CONNECTION_TIME)
             if (viewModel.hasInternetConnection == null) {
                 viewModel.hasInternetConnection = false
-                getMovies()
+                getMovies(viewModel)
             }
         }
     }
 
-
-    private fun getScreenOrientationInfo() {
+    private fun getScreenOrientationInfo(viewModel: MoviesViewModel) {
         val orientation = requireActivity().resources.configuration.orientation
         if (orientation == Configuration.ORIENTATION_LANDSCAPE)
-            isLandscapeMode = true
+            viewModel.isLandScape = true
     }
 
     private fun observeResult(viewModel: MoviesViewModel) {
@@ -86,15 +82,24 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
         }
     }
 
-    private fun initRecycleView() {
+    private fun initRecycleView(viewModel: MoviesViewModel) {
         with(binding.rvMovies) {
             layoutManager =
-                if (isLandscapeMode) GridLayoutManager(requireContext(), 3) else GridLayoutManager(
+                if (viewModel.isLandScape) GridLayoutManager(
+                    requireContext(),
+                    3
+                ) else GridLayoutManager(
                     requireContext(),
                     2
                 )
             adapter = movieAdapter
-            addOnScrollListener(OnScrollListener({ getMovies() }, viewModel.isLastPage, PAGE_SIZE))
+            addOnScrollListener(
+                OnScrollListener(
+                    { getMovies(viewModel) },
+                    viewModel.isLastPage,
+                    PAGE_SIZE
+                )
+            )
         }
     }
 
@@ -140,7 +145,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
             }
     }
 
-    private fun getMovies() {
+    private fun getMovies(viewModel: MoviesViewModel) {
         when (viewModel.hasInternetConnection) {
             true -> {
                 binding.progressBar.hide()

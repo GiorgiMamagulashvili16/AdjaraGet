@@ -17,23 +17,3 @@ fun <T> Fragment.observeData(liveData: LiveData<T>, observer: (it: T) -> Unit) {
     liveData.observe(this.viewLifecycleOwner, { observer(it) })
 }
 
-fun Dialog.showError(
-    message: String,
-    onRetryClick: () -> Unit,
-    btnText: String
-) {
-    val binding = DialogErrorBinding.inflate(layoutInflater)
-    this.setDialog(binding)
-    with(binding) {
-        btnRetry.text = btnText
-        btnRetry.setOnClickListener {
-            onRetryClick()
-        }
-        tvErrorText.text = message
-    }
-    this.show()
-}
-
-fun Dialog.dismissDialog() {
-    this.hide()
-}

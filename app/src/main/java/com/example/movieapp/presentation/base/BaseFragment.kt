@@ -26,7 +26,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>() : Fragment() {
     private var _binding: VB? = null
     protected val binding get() = _binding!!
 
-    protected lateinit var viewModel: VM
+    private lateinit var viewModel: VM
     private var errorDialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +45,6 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initFragment()
         onBindViewModel(viewModel)
         setListeners()
     }
@@ -53,7 +52,6 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>() : Fragment() {
 
     abstract fun inflateFragment(): Inflate<VB>
     abstract fun getVmClass(): Class<VM>
-    abstract fun initFragment()
     abstract fun onBindViewModel(viewModel: VM)
     abstract fun setListeners()
 

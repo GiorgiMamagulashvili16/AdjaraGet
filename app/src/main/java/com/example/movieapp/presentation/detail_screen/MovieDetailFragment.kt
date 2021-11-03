@@ -1,5 +1,6 @@
 package com.example.movieapp.presentation.detail_screen
 
+import android.util.Log.d
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.movieapp.R
@@ -24,13 +25,12 @@ class MovieDetailFragment :
 
     override fun getVmClass(): Class<MovieDetailViewModel> = MovieDetailViewModel::class.java
 
-    override fun initFragment() {
-    }
-
     override fun onBindViewModel(viewModel: MovieDetailViewModel) {
         val movie = args.movie
         viewModel.setMovie(movie)
-
+        viewModel.isMovieSaved(movie.id)
+        setFabClickListener(movie, viewModel)
+        setFab(viewModel)
         with(viewModel) {
             with(binding) {
                 observeData(title) {
@@ -59,17 +59,7 @@ class MovieDetailFragment :
                 }
             }
         }
-        observeMovie(viewModel)
-        setFab(viewModel)
-    }
 
-    private fun observeMovie(viewModel: MovieDetailViewModel) {
-        with(viewModel) {
-            observeData(movie) {
-                setFabClickListener(it, viewModel)
-                isMovieSaved(it.id)
-            }
-        }
     }
 
     private fun setFabClickListener(movie: Movie, viewModel: MovieDetailViewModel) {
@@ -84,12 +74,13 @@ class MovieDetailFragment :
     }
 
     private fun setFab(viewModel: MovieDetailViewModel) {
-        val isSaved = viewModel.isSavedMovie
-        if (isSaved) {
-            setRemoveFab()
-        } else {
-            setSaveFab()
-        }
+        viewModel.isMovieSaved.observe(viewLifecycleOwner, {
+            if (it) {
+                setRemoveFab()
+            } else {
+                setSaveFab()
+            }
+        })
     }
 
     private fun setRemoveFab() {
@@ -105,6 +96,7 @@ class MovieDetailFragment :
             setIconResource(drawable.ic_add)
         }
     }
+
     override fun setListeners() {
         with(binding) {
             ibBack.setOnClickListener {

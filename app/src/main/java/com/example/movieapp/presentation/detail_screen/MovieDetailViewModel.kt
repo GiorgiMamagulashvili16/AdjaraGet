@@ -1,5 +1,6 @@
 package com.example.movieapp.presentation.detail_screen
 
+import android.util.Log.d
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,6 +23,8 @@ class MovieDetailViewModel @Inject constructor(
     private val savedMovieRepo: SavedMovieRepoImpl,
     private val resourcesProvider: ResourcesProvider,
 ) : ViewModel() {
+    private var _isMovieSaved: MutableLiveData<Boolean> = MutableLiveData()
+    val isMovieSaved: LiveData<Boolean> = _isMovieSaved
     var isSavedMovie = false
 
     private var _movie: MutableLiveData<Movie> = MutableLiveData()
@@ -46,37 +49,37 @@ class MovieDetailViewModel @Inject constructor(
 
     fun setMovie(movie: Movie) = viewModelScope.launch {
         _movie.postValue(movie)
-        setMovieDetails()
+        d("VIEWMODELMOVIE", "$movie")
+        setMovieDetails(movie)
     }
 
-    private fun setMovieDetails() = viewModelScope.launch {
-        _coverUrl.postValue(_movie.value?.getBackDropUrl())
-        _movieRating.postValue(_movie.value?.vote_average.toString())
-        _originalTitle.postValue(_movie.value?.original_title)
-        _title.postValue(_movie.value?.title)
-        _rating.postValue(_movie.value?.vote_average?.toFloat()?.div(2))
+    private fun setMovieDetails(movie: Movie) = viewModelScope.launch {
+        _coverUrl.postValue(movie.getBackDropUrl())
+        _movieRating.postValue(movie.vote_average.toString())
+        _originalTitle.postValue(movie.original_title)
+        _title.postValue(movie.title)
+        _rating.postValue(movie.vote_average?.toFloat()?.div(2))
         _releaseDate.postValue(
             resourcesProvider.getString(
                 string.release_date_text,
                 "Release Date: ",
-                _movie.value?.release_date
+                movie.release_date
             )
         )
-        _overView.postValue(_movie.value?.overview)
-        _posterUrl.postValue(_movie.value?.getPosterUrl())
+        _overView.postValue(movie.overview)
+        _posterUrl.postValue(movie.getPosterUrl())
     }
 
     fun saveMovie(movie: Movie) = viewModelScope.launch {
         withContext(Dispatchers.IO) {
             savedMovieRepo.addMovie(movie)
         }
-
     }
 
     fun isMovieSaved(id: Int) = viewModelScope.launch {
         withContext(Dispatchers.IO) {
             val response = savedMovieRepo.isMovieSaved(id)
-            isSavedMovie = response
+            _isMovieSaved.postValue(response)
         }
     }
 

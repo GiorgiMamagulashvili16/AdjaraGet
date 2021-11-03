@@ -15,21 +15,20 @@ import kotlinx.coroutines.launch
 class SplashFragment : BaseFragment<SplashFragmentBinding, SplashViewModel>() {
 
     override fun onBindViewModel(viewModel: SplashViewModel) {
+        observeAnim(viewModel)
+        binding.apply {
+            ivLogo.setAnim(LOGO_ANIM_DURATION, anim.logo_anim) {
+                viewModel.isAnimOver(true)
+            }
+        }
+    }
+    override fun getVmClass(): Class<SplashViewModel> = SplashViewModel::class.java
+
+    private fun observeAnim(viewModel: SplashViewModel) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.moveToNextFragment.collect { isAnimationOver ->
                 if (isAnimationOver)
                     findNavController().navigate(R.id.action_splashFragment_to_moviesFragment)
-            }
-        }
-    }
-
-
-    override fun getVmClass(): Class<SplashViewModel> = SplashViewModel::class.java
-
-    override fun initFragment() {
-        binding.apply {
-            ivLogo.setAnim(LOGO_ANIM_DURATION, anim.logo_anim) {
-                viewModel.isAnimOver(true)
             }
         }
     }

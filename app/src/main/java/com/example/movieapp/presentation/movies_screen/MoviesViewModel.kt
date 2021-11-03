@@ -37,7 +37,7 @@ class MoviesViewModel @Inject constructor(
     private var popularMovieResponse: MovieResponse? = null
     private var currentPage = 0
     private var lastPage = 1
-
+    var isLandScape = false
     var isLastPage = currentPage == lastPage
 
     fun changeCurrentPage(newValue: Int) = viewModelScope.launch {
