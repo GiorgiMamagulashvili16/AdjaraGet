@@ -174,6 +174,4 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
             findNavController().navigate(action)
         }
     }
-
-
 }

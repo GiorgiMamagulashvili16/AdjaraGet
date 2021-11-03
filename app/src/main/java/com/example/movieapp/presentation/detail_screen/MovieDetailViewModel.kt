@@ -25,7 +25,7 @@ class MovieDetailViewModel @Inject constructor(
 ) : ViewModel() {
     private var _isMovieSaved: MutableLiveData<Boolean> = MutableLiveData()
     val isMovieSaved: LiveData<Boolean> = _isMovieSaved
-    var isSavedMovie = false
+
 
     private var _movie: MutableLiveData<Movie> = MutableLiveData()
     val movie: LiveData<Movie> = _movie
@@ -58,7 +58,7 @@ class MovieDetailViewModel @Inject constructor(
         _movieRating.postValue(movie.vote_average.toString())
         _originalTitle.postValue(movie.original_title)
         _title.postValue(movie.title)
-        _rating.postValue(movie.vote_average?.toFloat()?.div(2))
+        _rating.postValue(movie.vote_average.toFloat().div(2))
         _releaseDate.postValue(
             resourcesProvider.getString(
                 string.release_date_text,
