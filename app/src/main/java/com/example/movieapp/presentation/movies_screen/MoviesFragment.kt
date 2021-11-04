@@ -49,10 +49,12 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
             getMovies(viewModel)
         })
         viewLifecycleOwner.lifecycleScope.launch {
-            delay(CONNECTION_TIME)
-            if (viewModel.hasInternetConnection.value == null) {
-                viewModel.setInternetConnection(false)
-                getMovies(viewModel)
+            viewModel.hasInternetConnection.collectLatest {
+                delay(CONNECTION_TIME)
+                if (it == null) {
+                    viewModel.setInternetConnection(false)
+                    getMovies(viewModel)
+                }
             }
         }
     }

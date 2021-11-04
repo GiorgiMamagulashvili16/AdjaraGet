@@ -49,10 +49,9 @@ class MovieDetailViewModel @Inject constructor(
 
     fun setMovie(movie: Movie) = viewModelScope.launch {
         _movie.postValue(movie)
-        setMovieDetails(movie)
     }
 
-    private fun setMovieDetails(movie: Movie) = viewModelScope.launch {
+    fun setMovieDetails(movie: Movie) = viewModelScope.launch {
         _coverUrl.postValue(movie.getBackDropUrl())
         _movieRating.postValue(movie.vote_average.toString())
         _originalTitle.postValue(movie.original_title)

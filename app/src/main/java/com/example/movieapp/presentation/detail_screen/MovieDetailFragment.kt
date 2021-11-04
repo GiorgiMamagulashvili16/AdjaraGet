@@ -31,6 +31,11 @@ class MovieDetailFragment :
         viewModel.isMovieSaved(movie.id)
         setFabClickListener(movie, viewModel)
         setFab(viewModel)
+        observeMovie(viewModel)
+        observeMovieDetails(viewModel)
+    }
+
+    private fun observeMovieDetails(viewModel: MovieDetailViewModel) {
         with(viewModel) {
             with(binding) {
                 observeData(title) {
@@ -59,7 +64,14 @@ class MovieDetailFragment :
                 }
             }
         }
+    }
 
+    private fun observeMovie(viewModel: MovieDetailViewModel) {
+        with(viewModel) {
+            observeData(movie) {
+                setMovieDetails(it)
+            }
+        }
     }
 
     private fun setFabClickListener(movie: Movie, viewModel: MovieDetailViewModel) {
