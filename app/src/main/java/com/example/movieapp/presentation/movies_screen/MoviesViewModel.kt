@@ -1,10 +1,10 @@
 package com.example.movieapp.presentation.movies_screen
 
 import android.content.Context
-import android.util.Log.d
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.movieapp.models.Genre
 import com.example.movieapp.models.MovieResponse
 import com.example.movieapp.repositories.MovieRepositoryImpl
 import com.example.movieapp.repositories.SavedMovieRepoImpl
@@ -29,16 +29,29 @@ class MoviesViewModel @Inject constructor(
     private val _chipState = MutableStateFlow(buildVariantChipState)
     val chipState: StateFlow<ChipState> = _chipState
 
+    private val _isLandscape: MutableLiveData<Boolean> = MutableLiveData()
+    val isLandscape: LiveData<Boolean> = _isLandscape
+
+    private val _hasInternetConnection = MutableStateFlow<Boolean?>(null)
+    val hasInternetConnection: StateFlow<Boolean?> = _hasInternetConnection
+
+    fun setInternetConnection(newValue: Boolean) = viewModelScope.launch {
+        _hasInternetConnection.value = newValue
+    }
     fun setChipState(state: ChipState) = viewModelScope.launch {
         _chipState.value = state
+    }
+
+    fun setLandScape(newValue: Boolean) = viewModelScope.launch {
+        _isLandscape.postValue(newValue)
     }
 
     val connectionChecker = NetworkConnectionChecker(app)
 
     private var topRatedMovieResponse: MovieResponse? = null
     private var popularMovieResponse: MovieResponse? = null
-    var currentPage = 0
-    var lastPage = 1
+    private var currentPage = 0
+    private var lastPage = 1
 
     var isLastPage = currentPage == lastPage
 
@@ -51,7 +64,6 @@ class MoviesViewModel @Inject constructor(
 
     fun getMovies() {
         currentPage++
-        d("currentPage", "$currentPage")
         when (_chipState.value) {
             is ChipState.TopRated -> {
                 fetchTopRatedMovies(currentPage)

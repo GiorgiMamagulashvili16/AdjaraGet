@@ -1,23 +1,22 @@
 package com.example.movieapp.presentation.movies_screen
 
 import android.content.res.Configuration
-import android.util.Log.d
-import android.widget.AbsListView
 import androidx.core.view.isVisible
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.movieapp.R
 import com.example.movieapp.databinding.MoviesFragmentBinding
 import com.example.movieapp.presentation.adapters.MovieAdapter
 import com.example.movieapp.presentation.base.BaseFragment
 import com.example.movieapp.presentation.extensions.hide
+import com.example.movieapp.presentation.extensions.isLandScape
+import com.example.movieapp.presentation.extensions.observeData
 import com.example.movieapp.presentation.extensions.show
 import com.example.movieapp.util.Constants.CONNECTION_TIME
 import com.example.movieapp.util.Constants.DEFAULT_PAGE_INDEX
-import com.example.movieapp.util.NetworkConnectionChecker
+import com.example.movieapp.util.Constants.PAGE_SIZE
+import com.example.movieapp.util.Inflate
 import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -26,49 +25,45 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding::inflate) {
+class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
 
-    private val viewModel: MoviesViewModel by activityViewModels()
+
+    override fun getVmClass(): Class<MoviesViewModel> = MoviesViewModel::class.java
+    override fun inflateFragment(): Inflate<MoviesFragmentBinding> = MoviesFragmentBinding::inflate
 
     private val movieAdapter by lazy { MovieAdapter() }
-    private var isLandscapeMode: Boolean = false
 
-    private var hasInternet: Boolean? = true
-
-
-    override fun initFragment() {
-        observeNetworkConnection()
-        getScreenOrientationInfo()
-        setChipsValue()
-        chipSelect()
-        setListeners()
-        initRecycleView()
-        observeResult()
-        getMovies()
+    override fun onBindViewModel(viewModel: MoviesViewModel) {
+        getMovies(viewModel)
+        observeResult(viewModel)
+        setChipsValue(viewModel)
+        observeNetworkConnection(viewModel)
+        chipSelect(viewModel)
+        getScreenOrientationInfo(viewModel)
+        initRecycleView(viewModel)
     }
 
-    private fun observeNetworkConnection() {
+    private fun observeNetworkConnection(viewModel: MoviesViewModel) {
         viewModel.connectionChecker.observe(viewLifecycleOwner, {
-            hasInternet = it
-            getMovies()
+            viewModel.setInternetConnection(it)
+            getMovies(viewModel)
         })
         viewLifecycleOwner.lifecycleScope.launch {
-            delay(CONNECTION_TIME)
-            if (hasInternet == null) {
-                hasInternet = false
-                getMovies()
+            viewModel.hasInternetConnection.collectLatest {
+                delay(CONNECTION_TIME)
+                if (it == null) {
+                    viewModel.setInternetConnection(false)
+                    getMovies(viewModel)
+                }
             }
         }
     }
 
-
-    private fun getScreenOrientationInfo() {
-        val orientation = requireActivity().resources.configuration.orientation
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
-            isLandscapeMode = true
+    private fun getScreenOrientationInfo(viewModel: MoviesViewModel) {
+        viewModel.setLandScape(isLandScape())
     }
 
-    private fun observeResult() {
+    private fun observeResult(viewModel: MoviesViewModel) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.result.collect { state ->
                 if (!state.isLoading)
@@ -77,7 +72,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                     binding.progressBar.show()
                 if (state.data != null) {
                     binding.tvEmpty.isVisible = state.data.isEmpty()
-                    d("ISEMPT", "${state.data.isEmpty()}")
                     movieAdapter.submitList(state.data)
 
                 }
@@ -87,91 +81,113 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding>(MoviesFragmentBinding
                         viewModel.getMovies()
                     })
                 }
-
             }
         }
     }
 
-    private fun initRecycleView() {
-        with(binding.rvMovies) {
-            layoutManager =
-                if (isLandscapeMode) GridLayoutManager(requireContext(), 3) else GridLayoutManager(
-                    requireContext(),
-                    2
+    private fun initRecycleView(viewModel: MoviesViewModel) {
+        observeData(viewModel.isLandscape) { isLandScape ->
+            with(binding.rvMovies) {
+                layoutManager =
+                    if (isLandScape) GridLayoutManager(
+                        requireContext(),
+                        LANDSCAPE_SPAN_COUNT
+                    ) else GridLayoutManager(
+                        requireContext(),
+                        PORTRAIT_SPAN_COUNT
+                    )
+                adapter = movieAdapter
+                addOnScrollListener(
+                    OnScrollListener(
+                        { getMovies(viewModel) },
+                        viewModel.isLastPage,
+                        PAGE_SIZE
+                    )
                 )
-            adapter = movieAdapter
+            }
         }
-        movieAdapter.isLastItem = {
-            if (it && !viewModel.isLastPage)
-                getMovies()
+
+    }
+
+    private fun setChipsValue(viewModel: MoviesViewModel) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.chipState.collect { state ->
+                with(binding) {
+                    when (state) {
+                        is ChipState.Popular -> {
+                            chpPopular.isChecked = true
+                        }
+                        is ChipState.TopRated -> {
+                            chpTopRated.isChecked = true
+                        }
+                        is ChipState.Saved -> chpSaved.isChecked = true
+                    }
+                }
+            }
         }
     }
 
-    private fun setListeners() {
+    private fun chipSelect(viewModel: MoviesViewModel) {
+        binding.chpGroup
+            .setOnCheckedChangeListener { _, checkedId ->
+                with(viewModel) {
+                    when (checkedId) {
+                        R.id.chpPopular -> {
+                            setChipState(ChipState.Popular)
+                            changeCurrentPage(DEFAULT_PAGE_INDEX)
+                            getMovies()
+                        }
+                        R.id.chpSaved -> {
+                            setChipState(ChipState.Saved)
+                            getMovies()
+                        }
+                        R.id.chpTopRated -> {
+                            setChipState(ChipState.TopRated)
+                            changeCurrentPage(DEFAULT_PAGE_INDEX)
+                            getMovies()
+                        }
+                    }
+                }
+            }
+    }
+
+    private fun getMovies(viewModel: MoviesViewModel) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.hasInternetConnection.collectLatest { hasInternet ->
+                when (hasInternet) {
+                    true -> {
+                        binding.progressBar.hide()
+                        viewModel.getMovies()
+                    }
+                    null -> {
+                        binding.progressBar.show()
+                        observeNetworkConnection(viewModel)
+                    }
+                    false -> {
+                        binding.progressBar.hide()
+                        showErrorDialog(
+                            getString(string.no_internet),
+                            btnText = getString(string.go_to_saved),
+                            onRetryClick = {
+                                dismissErrorDialog()
+                                viewModel.setChipState(ChipState.Saved)
+                            })
+                    }
+                }
+            }
+        }
+
+    }
+
+    override fun setListeners() {
         movieAdapter.onPosterClick = { movie ->
             val action = MoviesFragmentDirections.actionMoviesFragmentToMovieDetailFragment(movie)
             findNavController().navigate(action)
         }
     }
 
-    private fun setChipsValue() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.chipState.collect { state ->
-                when (state) {
-                    is ChipState.Popular -> {
-                        binding.chpPopular.isChecked = true
-                    }
-                    is ChipState.TopRated -> {
-                        binding.chpTopRated.isChecked = true
-                    }
-                    is ChipState.Saved -> binding.chpSaved.isChecked = true
-                }
-            }
-        }
-    }
-
-    private fun chipSelect() {
-        binding.chpGroup
-            .setOnCheckedChangeListener { _, checkedId ->
-                when (checkedId) {
-                    R.id.chpPopular -> {
-                        viewModel.setChipState(ChipState.Popular)
-                        viewModel.changeCurrentPage(DEFAULT_PAGE_INDEX)
-                        getMovies()
-                    }
-                    R.id.chpSaved -> {
-                        viewModel.setChipState(ChipState.Saved)
-                        viewModel.getMovies()
-                    }
-                    R.id.chpTopRated -> {
-                        viewModel.setChipState(ChipState.TopRated)
-                        viewModel.changeCurrentPage(DEFAULT_PAGE_INDEX)
-                        getMovies()
-                    }
-                }
-            }
-    }
-
-    private fun getMovies() {
-        when (hasInternet) {
-            true -> {
-                binding.progressBar.hide()
-                viewModel.getMovies()
-            }
-            null -> {
-                binding.progressBar.show()
-                observeNetworkConnection()
-            }
-            false -> {
-                binding.progressBar.hide()
-                showErrorDialog(
-                    getString(string.no_internet),
-                    btnText = getString(string.go_to_saved),
-                    onRetryClick = {
-                        dismissErrorDialog()
-                        viewModel.setChipState(ChipState.Saved)
-                    })
-            }
-        }
+    companion object {
+        private const val PORTRAIT_SPAN_COUNT = 2
+        private const val LANDSCAPE_SPAN_COUNT = 3
     }
 }
