@@ -17,35 +17,11 @@ import javax.inject.Inject
 class MovieRepositoryImpl @Inject constructor(
     private val movieService: MovieService
 ) : MovieRepository {
-    override suspend fun getMovieById(movieId: Int): ResponseHandler<Movie> {
-
-        return withContext(Dispatchers.IO) {
-            fetchData {
-                val response = movieService.getMovieById(movieId = movieId)
-                if (response.isSuccessful) {
-                    val body = response.body()!!
-                    ResponseHandler.Success(body)
-                } else {
-                    val errorBody =
-                        Gson().fromJson(response.errorBody()!!.string(), Error::class.java)
-                    ResponseHandler.Error(errorBody.statusMessage)
-                }
-            }
-        }
-    }
 
     override suspend fun getTopRatedMovies(page: Int): ResponseHandler<MovieResponse> {
         return withContext(Dispatchers.IO) {
             fetchData {
-                val response = movieService.getTopRatedMovies(page)
-                if (response.isSuccessful) {
-                    val body = response.body()
-                    ResponseHandler.Success(body)
-                } else {
-                    val errorBody =
-                        Gson().fromJson(response.errorBody()!!.string(), Error::class.java)
-                    ResponseHandler.Error(errorBody.statusMessage)
-                }
+                movieService.getTopRatedMovies(page)
             }
         }
     }
@@ -53,15 +29,7 @@ class MovieRepositoryImpl @Inject constructor(
     override suspend fun getPopularMovies(page: Int): ResponseHandler<MovieResponse> {
         return withContext(Dispatchers.IO) {
             fetchData {
-                val response = movieService.getPopularMovies(page)
-                if (response.isSuccessful) {
-                    val body = response.body()!!
-                    ResponseHandler.Success(body)
-                } else {
-                    val errorBody =
-                        Gson().fromJson(response.errorBody()!!.string(), Error::class.java)
-                    ResponseHandler.Error(errorBody.statusMessage)
-                }
+                movieService.getPopularMovies(page)
             }
         }
     }
