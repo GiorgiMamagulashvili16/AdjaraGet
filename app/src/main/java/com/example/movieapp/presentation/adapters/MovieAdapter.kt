@@ -30,7 +30,7 @@ class MovieAdapter : ListAdapter<Movie, MovieAdapter.VH>(COMPARATOR) {
     }
 
     class VH(val binding: RowMovieItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+        RecyclerView.ViewHolder(binding.root){
         fun onBind(movie: Movie, onPosterClick: onPosterClick) {
 
             with(binding.root) {

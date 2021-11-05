@@ -1,6 +1,7 @@
 package com.example.movieapp.presentation.movies_screen
 
-import android.content.res.Configuration
+import android.graphics.Color
+import android.util.Log
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -9,15 +10,13 @@ import com.example.movieapp.R
 import com.example.movieapp.databinding.MoviesFragmentBinding
 import com.example.movieapp.presentation.adapters.MovieAdapter
 import com.example.movieapp.presentation.base.BaseFragment
-import com.example.movieapp.presentation.extensions.hide
-import com.example.movieapp.presentation.extensions.isLandScape
-import com.example.movieapp.presentation.extensions.observeData
-import com.example.movieapp.presentation.extensions.show
+import com.example.movieapp.presentation.extensions.*
 import com.example.movieapp.util.Constants.CONNECTION_TIME
 import com.example.movieapp.util.Constants.DEFAULT_PAGE_INDEX
 import com.example.movieapp.util.Constants.PAGE_SIZE
 import com.example.movieapp.util.Inflate
 import com.example.movieapp.util.string
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -43,43 +42,28 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
         initRecycleView(viewModel)
     }
 
-    private fun observeNetworkConnection(viewModel: MoviesViewModel) {
-        viewModel.connectionChecker.observe(viewLifecycleOwner, {
-            viewModel.setInternetConnection(it)
-            getMovies(viewModel)
-        })
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.hasInternetConnection.collectLatest {
-                delay(CONNECTION_TIME)
-                if (it == null) {
-                    viewModel.setInternetConnection(false)
-                    getMovies(viewModel)
-                }
-            }
-        }
-    }
-
     private fun getScreenOrientationInfo(viewModel: MoviesViewModel) {
         viewModel.setLandScape(isLandScape())
     }
 
     private fun observeResult(viewModel: MoviesViewModel) {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.result.collect { state ->
+            viewModel.result.collectLatest { state ->
                 if (!state.isLoading)
                     binding.progressBar.hide()
                 else
                     binding.progressBar.show()
                 if (state.data != null) {
+
                     binding.tvEmpty.isVisible = state.data.isEmpty()
                     movieAdapter.submitList(state.data)
-
                 }
                 if (state.error != null) {
-                    showErrorDialog(state.error, onRetryClick = {
-                        viewModel.changeCurrentPage(DEFAULT_PAGE_INDEX)
-                        viewModel.getMovies()
-                    })
+                    createSnackBar(state.error, length = Snackbar.LENGTH_LONG) {
+                        snackAction(textColor = Color.RED, action = getString(string.retry)) {
+                            getMovies(viewModel)
+                        }
+                    }
                 }
             }
         }
@@ -107,6 +91,22 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
             }
         }
 
+    }
+
+    private fun observeNetworkConnection(viewModel: MoviesViewModel) {
+        viewModel.connectionChecker.observe(viewLifecycleOwner, {
+            viewModel.setInternetConnection(it)
+            getMovies(viewModel)
+        })
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.hasInternetConnection.collectLatest {
+                delay(CONNECTION_TIME)
+                if (it == null) {
+                    viewModel.setInternetConnection(false)
+                    getMovies(viewModel)
+                }
+            }
+        }
     }
 
     private fun setChipsValue(viewModel: MoviesViewModel) {
@@ -165,13 +165,17 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
                     }
                     false -> {
                         binding.progressBar.hide()
-                        showErrorDialog(
+                        createSnackBar(
                             getString(string.no_internet),
-                            btnText = getString(string.go_to_saved),
-                            onRetryClick = {
-                                dismissErrorDialog()
+                            length = Snackbar.LENGTH_INDEFINITE
+                        ) {
+                            snackAction(
+                                textColor = Color.RED,
+                                action = getString(string.go_to_saved)
+                            ) {
                                 viewModel.setChipState(ChipState.Saved)
-                            })
+                            }
+                        }
                     }
                 }
             }

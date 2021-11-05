@@ -3,6 +3,7 @@ package com.example.movieapp.presentation.base
 import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
+import android.util.Log.d
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,9 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import com.example.movieapp.databinding.DialogErrorBinding
 import com.example.movieapp.databinding.DialogLoadingBinding
-import com.example.movieapp.presentation.extensions.dismissDialog
-import com.example.movieapp.presentation.extensions.setDialog
-import com.example.movieapp.presentation.extensions.showError
+import com.example.movieapp.presentation.extensions.*
 import com.example.movieapp.util.Inflate
 import com.example.movieapp.util.NetworkConnectionChecker
 import com.example.movieapp.util.string
@@ -47,6 +46,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>() : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         onBindViewModel(viewModel)
         setListeners()
+
     }
 
 
@@ -55,21 +55,4 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>() : Fragment() {
     abstract fun onBindViewModel(viewModel: VM)
     abstract fun setListeners()
 
-    protected fun showErrorDialog(
-        message: String,
-        onRetryClick: () -> Unit,
-        btnText: String = getString(string.retry),
-    ) {
-        errorDialog = Dialog(requireContext())
-        errorDialog!!.showError(message, onRetryClick, btnText)
-    }
-
-    protected fun dismissErrorDialog() {
-        errorDialog?.dismissDialog()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
 }
