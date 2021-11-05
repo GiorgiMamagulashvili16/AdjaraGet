@@ -1,7 +1,8 @@
 package com.example.movieapp.presentation.adapters
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
+import android.util.Log
+import android.util.Log.d
+import android.view.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView

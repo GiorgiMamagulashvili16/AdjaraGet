@@ -136,8 +136,10 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
 
     override fun setListeners() {
         movieAdapter.onPosterClick = { movie ->
-            val action = MoviesFragmentDirections.actionMoviesFragmentToMovieDetailFragment(movie)
-            findNavController().navigate(action)
+            if (findNavController().currentDestination?.id == R.id.moviesFragment){
+                val action = MoviesFragmentDirections.actionMoviesFragmentToMovieDetailFragment(movie)
+                findNavController().navigate(action)
+            }
         }
     }
 
