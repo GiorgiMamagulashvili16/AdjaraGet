@@ -1,12 +1,10 @@
 package com.example.movieapp.presentation.detail_screen
 
-import android.util.Log.d
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.movieapp.R
 import com.example.movieapp.databinding.MovieDetailFragmentBinding
 import com.example.movieapp.models.Movie
-import com.example.movieapp.presentation.adapters.GenresAdapter
 import com.example.movieapp.presentation.base.BaseFragment
 import com.example.movieapp.presentation.extensions.loadImage
 import com.example.movieapp.presentation.extensions.observeData
@@ -29,7 +27,6 @@ class MovieDetailFragment :
         val movie = args.movie
         viewModel.setMovie(movie)
         viewModel.isMovieSaved(movie.id)
-        setFabClickListener(movie, viewModel)
         setFab(viewModel)
         observeMovie(viewModel)
         observeMovieDetails(viewModel)
@@ -70,6 +67,7 @@ class MovieDetailFragment :
         with(viewModel) {
             observeData(movie) {
                 setMovieDetails(it)
+                setFabClickListener(it, viewModel)
             }
         }
     }

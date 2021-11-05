@@ -1,6 +1,5 @@
 package com.example.movieapp.presentation.detail_screen
 
-import android.util.Log.d
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,7 +10,6 @@ import com.example.movieapp.repositories.SavedMovieRepoImpl
 import com.example.movieapp.util.ResourcesProvider
 import com.example.movieapp.util.string
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
