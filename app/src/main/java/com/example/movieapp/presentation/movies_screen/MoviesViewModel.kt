@@ -32,12 +32,6 @@ class MoviesViewModel @Inject constructor(
     private val _isLandscape: MutableLiveData<Boolean> = MutableLiveData()
     val isLandscape: LiveData<Boolean> = _isLandscape
 
-    private val _hasInternetConnection = MutableStateFlow<Boolean?>(null)
-    val hasInternetConnection: StateFlow<Boolean?> = _hasInternetConnection
-
-    fun setInternetConnection(newValue: Boolean) = viewModelScope.launch {
-        _hasInternetConnection.value = newValue
-    }
     fun setChipState(state: ChipState) = viewModelScope.launch {
         _chipState.value = state
     }
@@ -46,7 +40,6 @@ class MoviesViewModel @Inject constructor(
         _isLandscape.postValue(newValue)
     }
 
-    val connectionChecker = NetworkConnectionChecker(app)
 
     private var topRatedMovieResponse: MovieResponse? = null
     private var popularMovieResponse: MovieResponse? = null
@@ -107,8 +100,6 @@ class MoviesViewModel @Inject constructor(
                 _result.value = MovieScreenState(isLoading = false, error = response.errorMessage)
             }
         }
-
-
     }
 
     private fun fetchTopRatedMovies(page: Int) = viewModelScope.launch {

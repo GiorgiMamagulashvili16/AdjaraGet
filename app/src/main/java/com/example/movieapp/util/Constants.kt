@@ -17,4 +17,6 @@ object Constants {
 
     const val API_KEY_QUERY_PARAM = "api_key"
 
+    const val COMMAND_FOR_PING = "ping -c 1 google.com"
+
 }

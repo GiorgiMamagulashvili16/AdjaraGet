@@ -33,10 +33,9 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
     private val movieAdapter by lazy { MovieAdapter() }
 
     override fun onBindViewModel(viewModel: MoviesViewModel) {
-        getMovies(viewModel)
+        viewModel.getMovies()
         observeResult(viewModel)
         setChipsValue(viewModel)
-        observeNetworkConnection(viewModel)
         chipSelect(viewModel)
         getScreenOrientationInfo(viewModel)
         initRecycleView(viewModel)
@@ -59,9 +58,9 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
                     movieAdapter.submitList(state.data)
                 }
                 if (state.error != null) {
-                    createSnackBar(state.error, length = Snackbar.LENGTH_LONG) {
-                        snackAction(textColor = Color.RED, action = getString(string.retry)) {
-                            getMovies(viewModel)
+                    createSnackBar(state.error, length = Snackbar.LENGTH_INDEFINITE) {
+                        snackAction(textColor = Color.RED, action = getString(string.go_to_saved)) {
+                            viewModel.setChipState(ChipState.Saved)
                         }
                     }
                 }
@@ -83,7 +82,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
                 adapter = movieAdapter
                 addOnScrollListener(
                     OnScrollListener(
-                        { getMovies(viewModel) },
+                        { viewModel.getMovies() },
                         viewModel.isLastPage,
                         PAGE_SIZE
                     )
@@ -91,22 +90,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
             }
         }
 
-    }
-
-    private fun observeNetworkConnection(viewModel: MoviesViewModel) {
-        viewModel.connectionChecker.observe(viewLifecycleOwner, {
-            viewModel.setInternetConnection(it)
-            getMovies(viewModel)
-        })
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.hasInternetConnection.collectLatest {
-                delay(CONNECTION_TIME)
-                if (it == null) {
-                    viewModel.setInternetConnection(false)
-                    getMovies(viewModel)
-                }
-            }
-        }
     }
 
     private fun setChipsValue(viewModel: MoviesViewModel) {
@@ -149,38 +132,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
                     }
                 }
             }
-    }
-
-    private fun getMovies(viewModel: MoviesViewModel) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.hasInternetConnection.collectLatest { hasInternet ->
-                when (hasInternet) {
-                    true -> {
-                        binding.progressBar.hide()
-                        viewModel.getMovies()
-                    }
-                    null -> {
-                        binding.progressBar.show()
-                        observeNetworkConnection(viewModel)
-                    }
-                    false -> {
-                        binding.progressBar.hide()
-                        createSnackBar(
-                            getString(string.no_internet),
-                            length = Snackbar.LENGTH_INDEFINITE
-                        ) {
-                            snackAction(
-                                textColor = Color.RED,
-                                action = getString(string.go_to_saved)
-                            ) {
-                                viewModel.setChipState(ChipState.Saved)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
     }
 
     override fun setListeners() {
