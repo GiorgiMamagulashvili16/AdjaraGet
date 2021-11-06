@@ -1,6 +1,5 @@
 package com.example.movieapp.presentation.movies_screen
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,10 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.movieapp.models.MovieResponse
 import com.example.movieapp.repositories.MovieRepositoryImpl
 import com.example.movieapp.repositories.SavedMovieRepoImpl
-import com.example.movieapp.util.NetworkConnectionChecker
 import com.example.movieapp.util.ResponseHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +20,6 @@ import javax.inject.Inject
 class MoviesViewModel @Inject constructor(
     private val movieRepo: MovieRepositoryImpl,
     private val savedMovieRepo: SavedMovieRepoImpl,
-    @ApplicationContext app: Context
 ) : ViewModel(), SetChipState {
 
     private val _chipState = MutableStateFlow(buildVariantChipState)

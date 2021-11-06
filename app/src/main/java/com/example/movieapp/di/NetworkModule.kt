@@ -29,10 +29,14 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    fun provideGsonConvertFactory(): GsonConverterFactory = GsonConverterFactory.create()
+
+    @Provides
+    @Singleton
     fun provideRetrofit(): Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .client(provideHttpClient())
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(provideGsonConvertFactory())
         .build()
 
     @Provides

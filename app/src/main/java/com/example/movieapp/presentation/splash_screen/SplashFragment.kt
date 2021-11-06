@@ -12,7 +12,7 @@ import com.example.movieapp.util.anim
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class SplashFragment : BaseFragment<SplashFragmentBinding, SplashViewModel>() {
+class SplashFragment() : BaseFragment<SplashFragmentBinding, SplashViewModel>() {
 
     override fun onBindViewModel(viewModel: SplashViewModel) {
         observeAnim(viewModel)
@@ -22,6 +22,7 @@ class SplashFragment : BaseFragment<SplashFragmentBinding, SplashViewModel>() {
             }
         }
     }
+
     override fun getVmClass(): Class<SplashViewModel> = SplashViewModel::class.java
 
     private fun observeAnim(viewModel: SplashViewModel) {

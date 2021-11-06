@@ -1,37 +1,35 @@
 package com.example.movieapp.presentation.movies_screen
 
 import android.graphics.Color
-import android.util.Log
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.movieapp.R
 import com.example.movieapp.databinding.MoviesFragmentBinding
 import com.example.movieapp.presentation.adapters.MovieAdapter
 import com.example.movieapp.presentation.base.BaseFragment
 import com.example.movieapp.presentation.extensions.*
-import com.example.movieapp.util.Constants.CONNECTION_TIME
 import com.example.movieapp.util.Constants.DEFAULT_PAGE_INDEX
 import com.example.movieapp.util.Constants.PAGE_SIZE
 import com.example.movieapp.util.Inflate
 import com.example.movieapp.util.string
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
+class MoviesFragment() :
+    BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
 
-
+    override var isSharedVm: Boolean = true
     override fun getVmClass(): Class<MoviesViewModel> = MoviesViewModel::class.java
     override fun inflateFragment(): Inflate<MoviesFragmentBinding> = MoviesFragmentBinding::inflate
 
     private val movieAdapter by lazy { MovieAdapter() }
-
     override fun onBindViewModel(viewModel: MoviesViewModel) {
         viewModel.getMovies()
         observeResult(viewModel)
@@ -69,25 +67,30 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
     }
 
     private fun initRecycleView(viewModel: MoviesViewModel) {
+        movieAdapter.stateRestorationPolicy =
+            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         observeData(viewModel.isLandscape) { isLandScape ->
+            val lm = if (isLandScape) GridLayoutManager(
+                requireContext(),
+                LANDSCAPE_SPAN_COUNT
+            ) else GridLayoutManager(
+                requireContext(),
+                PORTRAIT_SPAN_COUNT
+            )
+
             with(binding.rvMovies) {
-                layoutManager =
-                    if (isLandScape) GridLayoutManager(
-                        requireContext(),
-                        LANDSCAPE_SPAN_COUNT
-                    ) else GridLayoutManager(
-                        requireContext(),
-                        PORTRAIT_SPAN_COUNT
-                    )
+                layoutManager = lm
                 adapter = movieAdapter
                 addOnScrollListener(
                     OnScrollListener(
                         { viewModel.getMovies() },
                         viewModel.isLastPage,
-                        PAGE_SIZE
+                        PAGE_SIZE,
+                        lm
                     )
                 )
             }
+
         }
 
     }
@@ -136,10 +139,14 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
 
     override fun setListeners() {
         movieAdapter.onPosterClick = { movie ->
-            if (findNavController().currentDestination?.id == R.id.moviesFragment){
-                val action = MoviesFragmentDirections.actionMoviesFragmentToMovieDetailFragment(movie)
-                findNavController().navigate(action)
+            with(findNavController()) {
+                if (currentDestination?.id == R.id.moviesFragment) {
+                    val action =
+                        MoviesFragmentDirections.actionMoviesFragmentToMovieDetailFragment(movie)
+                    navigate(action)
+                }
             }
+
         }
     }
 

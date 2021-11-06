@@ -1,9 +1,6 @@
 package com.example.movieapp.presentation.base
 
-import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
-import android.util.Log.d
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,26 +8,23 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
-import com.example.movieapp.databinding.DialogErrorBinding
-import com.example.movieapp.databinding.DialogLoadingBinding
-import com.example.movieapp.presentation.extensions.*
 import com.example.movieapp.util.Inflate
-import com.example.movieapp.util.NetworkConnectionChecker
-import com.example.movieapp.util.string
-import java.lang.Exception
 
-
-abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>() : Fragment() {
+abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>() :
+    Fragment() {
 
     private var _binding: VB? = null
     protected val binding get() = _binding!!
 
+    open var isSharedVm: Boolean = false
     private lateinit var viewModel: VM
-    private var errorDialog: Dialog? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(getVmClass())
+        viewModel = if (isSharedVm) {
+            ViewModelProvider(requireActivity()).get(getVmClass())
+        } else {
+            ViewModelProvider(this).get(getVmClass())
+        }
     }
 
     override fun onCreateView(

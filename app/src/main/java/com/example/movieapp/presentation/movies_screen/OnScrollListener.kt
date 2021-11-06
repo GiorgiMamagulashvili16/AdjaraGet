@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movieapp.util.Constants.DEFAULT_ITEM_INDEX
 
-class OnScrollListener(val call: () -> Unit, val isLastPage: Boolean,val pageSize:Int) :
+class OnScrollListener(val call: () -> Unit, val isLastPage: Boolean,val pageSize:Int,val layoutManager: GridLayoutManager) :
     RecyclerView.OnScrollListener() {
 
     var isScrolling = false
@@ -20,7 +20,7 @@ class OnScrollListener(val call: () -> Unit, val isLastPage: Boolean,val pageSiz
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
 
-        val layoutManager = recyclerView.layoutManager as GridLayoutManager
+        val layoutManager = layoutManager
         val firstItemPosition = layoutManager.findFirstVisibleItemPosition()
         val visibleItems = layoutManager.childCount
         val totalItems = layoutManager.itemCount
