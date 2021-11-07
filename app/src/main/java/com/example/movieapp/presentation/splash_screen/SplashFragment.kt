@@ -33,7 +33,5 @@ class SplashFragment() : BaseFragment<SplashFragmentBinding, SplashViewModel>() 
             }
         }
     }
-
-    override fun setListeners() {}
     override fun inflateFragment(): Inflate<SplashFragmentBinding> = SplashFragmentBinding::inflate
 }

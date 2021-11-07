@@ -47,6 +47,6 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>() :
     abstract fun inflateFragment(): Inflate<VB>
     abstract fun getVmClass(): Class<VM>
     abstract fun onBindViewModel(viewModel: VM)
-    abstract fun setListeners()
+    open fun setListeners() {}
 
 }

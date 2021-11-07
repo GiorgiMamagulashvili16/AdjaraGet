@@ -70,6 +70,7 @@ class MoviesFragment() :
         movieAdapter.stateRestorationPolicy =
             RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         observeData(viewModel.isLandscape) { isLandScape ->
+
             val lm = if (isLandScape) GridLayoutManager(
                 requireContext(),
                 LANDSCAPE_SPAN_COUNT
