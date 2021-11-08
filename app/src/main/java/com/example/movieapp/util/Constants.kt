@@ -6,6 +6,7 @@ object Constants {
     const val API_KEY = "5722f4a67d3004aa2865e44355fff452"
     const val IMAGE_URL = "https://image.tmdb.org/t/p/w500/"
 
+    const val DEFAULT_PAGE_INDEX = 0
     const val DB_NAME = "movie_db"
 
     const val DEFAULT_ITEM_INDEX = 0
