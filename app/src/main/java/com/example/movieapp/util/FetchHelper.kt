@@ -1,7 +1,6 @@
 package com.example.movieapp.util
 
 import com.example.movieapp.models.Error
-import com.example.movieapp.util.exceptions.NoConnectionException
 import com.google.gson.Gson
 import okhttp3.ResponseBody
 import retrofit2.HttpException

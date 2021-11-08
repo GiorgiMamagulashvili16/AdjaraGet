@@ -10,5 +10,4 @@ typealias mipmap = R.mipmap
 typealias drawable = R.drawable
 typealias string = R.string
 typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
-typealias IsLastItem = (isLastItem: Boolean) -> Unit
 typealias onPosterClick = (movie:Movie) -> Unit
