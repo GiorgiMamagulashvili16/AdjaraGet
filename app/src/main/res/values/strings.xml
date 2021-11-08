@@ -6,7 +6,7 @@
     <string name="saved">Saved</string>
     <string name="original_title">Original Title</string>
     <string name="title">Title</string>
-    <string name="release_date">Release Date</string>
+    <string name="release_date">Release Date: </string>
     <string name="overview">OverView</string>
     <string name="release_date_text">%1$s\ %2$s</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -14,14 +14,12 @@
     <string name="retry">Retry</string>
     <string name="loading">Loading…</string>
     <string name="no_more_data">No More Data</string>
-    <array name="autosize_text_sizes">
-        <item>12sp</item>
-        <item>15sp</item>
-        <item>18sp</item>
-    </array>
     <string name="no_internet">No Internet Connection</string>
     <string name="go_to_saved">Go To Saved Movies</string>
     <string name="save">save</string>
     <string name="remove">remove</string>
     <string name="you_have_not_saved_movies">You Have Not Saved Movies</string>
+    <string name="invalid_api_key">Invalid Api Key</string>
+    <string name="not_found">Movies Not Found</string>
+
 </resources>

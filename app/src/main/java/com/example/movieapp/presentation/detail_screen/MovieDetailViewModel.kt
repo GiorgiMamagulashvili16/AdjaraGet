@@ -39,7 +39,7 @@ class MovieDetailViewModel @Inject constructor(
     fun setMovieDetails(movie: Movie) = viewModelScope.launch {
         val releaseDate = resourcesProvider.getString(
             string.release_date_text,
-            "Release Date: ",
+            string.release_date,
             movie.release_date
         )
         val movieDetails = Movie(
