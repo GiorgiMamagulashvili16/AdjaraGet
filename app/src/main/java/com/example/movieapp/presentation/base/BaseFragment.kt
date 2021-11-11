@@ -16,11 +16,11 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel>() :
     private var _binding: VB? = null
     protected val binding get() = _binding!!
 
-    open var isSharedVm: Boolean = false
+    open var isActivityVm:Boolean = false
     private lateinit var viewModel: VM
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = if (isSharedVm) {
+        viewModel = if (isActivityVm) {
             ViewModelProvider(requireActivity()).get(getVmClass())
         } else {
             ViewModelProvider(this).get(getVmClass())

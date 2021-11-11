@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 class MoviesFragment() :
     BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
 
-    override var isSharedVm: Boolean = true
+    override var isActivityVm: Boolean = true
     override fun getVmClass(): Class<MoviesViewModel> = MoviesViewModel::class.java
     override fun inflateFragment(): Inflate<MoviesFragmentBinding> = MoviesFragmentBinding::inflate
 
