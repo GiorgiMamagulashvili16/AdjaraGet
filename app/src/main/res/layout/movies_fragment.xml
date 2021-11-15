@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/rootLayout"
     android:background="?attr/colorPrimary"
     app:layoutDescription="@xml/movies_fragment_scene"
     tools:context=".presentation.movies_screen.MoviesFragment">

@@ -2,8 +2,6 @@ package com.example.movieapp.presentation.extensions
 
 import android.content.res.Configuration
 import android.view.View
-import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import com.google.android.material.snackbar.Snackbar

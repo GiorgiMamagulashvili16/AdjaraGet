@@ -20,21 +20,3 @@ fun View.setAnim(time: Long, animation: Int, eventAfterEnd: () -> Unit) {
 
     })
 }
-
-fun View.fadeIn(time: Int) {
-    val fadeIn = AlphaAnimation(0f, 1f)
-    fadeIn.apply {
-        interpolator = DecelerateInterpolator()
-        duration = time.toLong()
-    }
-    this.startAnimation(fadeIn)
-}
-
-fun View.fadeOut(time: Int) {
-    val fadeOut = AlphaAnimation(1f, 0f)
-    fadeOut.apply {
-        interpolator = AccelerateInterpolator()
-        duration = time.toLong()
-    }
-    this.startAnimation(fadeOut)
-}

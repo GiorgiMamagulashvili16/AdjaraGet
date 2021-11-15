@@ -14,7 +14,7 @@ import com.example.movieapp.util.string
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MovieDetailFragment :
+class MovieDetailFragment() :
     BaseFragment<MovieDetailFragmentBinding, MovieDetailViewModel>() {
 
     private val args: MovieDetailFragmentArgs by navArgs()
@@ -35,31 +35,23 @@ class MovieDetailFragment :
     private fun observeMovieDetails(viewModel: MovieDetailViewModel) {
         with(viewModel) {
             with(binding) {
-                observeData(title) {
-                    tvTitle.text = it
-                }
-                observeData(originalTitle) {
-                    tvOriginalTitle.text = it
-                }
-                observeData(releaseDate) {
-                    tvReleaseDate.text = it
-                }
-                observeData(coverUrl) {
-                    ivCover?.loadImage(it)
-                }
-                observeData(posterUrl) {
-                    ivPoster.loadImage(it)
-                }
-                observeData(movieRating) {
-                    tvRating.text = it
-                }
-                observeData(rating) {
-                    rbMovieRating.rating = it
-                }
-                observeData(overView) {
-                    tvOverview.text = it
+                observeData(movieDetails) { movie ->
+                    tvOverview.text = movie.overview
+                    tvRating.text = movie.vote_average.toString()
+                    tvReleaseDate.text = movie.release_date
+                    tvTitle.text = movie.title
+                    tvOriginalTitle.text = movie.original_title
+                    ivPoster.loadImage(movie.poster_path)
+                    ivCover?.loadImage(movie.backdrop_path)
                 }
             }
+        }
+        observeMovieRating(viewModel)
+    }
+
+    private fun observeMovieRating(viewModel: MovieDetailViewModel) {
+        observeData(viewModel.rating) {
+            binding.rbMovieRating.rating = it
         }
     }
 
@@ -117,8 +109,6 @@ class MovieDetailFragment :
             }
         }
     }
-
-
 }
 
 

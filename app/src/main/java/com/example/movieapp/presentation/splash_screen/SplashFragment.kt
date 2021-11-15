@@ -22,6 +22,7 @@ class SplashFragment : BaseFragment<SplashFragmentBinding, SplashViewModel>() {
             }
         }
     }
+
     override fun getVmClass(): Class<SplashViewModel> = SplashViewModel::class.java
 
     private fun observeAnim(viewModel: SplashViewModel) {
@@ -32,7 +33,5 @@ class SplashFragment : BaseFragment<SplashFragmentBinding, SplashViewModel>() {
             }
         }
     }
-
-    override fun setListeners() {}
     override fun inflateFragment(): Inflate<SplashFragmentBinding> = SplashFragmentBinding::inflate
 }

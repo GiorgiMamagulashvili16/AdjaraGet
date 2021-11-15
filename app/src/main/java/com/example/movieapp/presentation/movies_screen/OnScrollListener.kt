@@ -5,10 +5,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movieapp.util.Constants.DEFAULT_ITEM_INDEX
 
-class OnScrollListener(val call: () -> Unit, val isLastPage: Boolean,val pageSize:Int) :
+class OnScrollListener(val getMovies: () -> Unit, private val isLastPage: Boolean, private val pageSize:Int, private val lm: GridLayoutManager) :
     RecyclerView.OnScrollListener() {
 
-    var isScrolling = false
+   private var isScrolling = false
 
     override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
         super.onScrollStateChanged(recyclerView, newState)
@@ -19,11 +19,9 @@ class OnScrollListener(val call: () -> Unit, val isLastPage: Boolean,val pageSiz
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
-
-        val layoutManager = recyclerView.layoutManager as GridLayoutManager
-        val firstItemPosition = layoutManager.findFirstVisibleItemPosition()
-        val visibleItems = layoutManager.childCount
-        val totalItems = layoutManager.itemCount
+        val firstItemPosition = lm.findFirstVisibleItemPosition()
+        val visibleItems = lm.childCount
+        val totalItems = lm.itemCount
 
         val isAtLastItem = firstItemPosition + visibleItems >= totalItems
         val isNotAtStart = firstItemPosition >= DEFAULT_ITEM_INDEX
@@ -31,7 +29,7 @@ class OnScrollListener(val call: () -> Unit, val isLastPage: Boolean,val pageSiz
         val paginate =
             isNotAtStart && isAtLastItem && isNotAtStart && isTotalThanVisible && isScrolling && !isLastPage
         if (paginate) {
-            call()
+            getMovies()
             isScrolling = false
         }
     }

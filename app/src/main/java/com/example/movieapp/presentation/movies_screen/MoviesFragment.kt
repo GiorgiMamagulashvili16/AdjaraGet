@@ -1,42 +1,39 @@
 package com.example.movieapp.presentation.movies_screen
 
 import android.graphics.Color
-import android.util.Log
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.movieapp.R
 import com.example.movieapp.databinding.MoviesFragmentBinding
 import com.example.movieapp.presentation.adapters.MovieAdapter
 import com.example.movieapp.presentation.base.BaseFragment
 import com.example.movieapp.presentation.extensions.*
-import com.example.movieapp.util.Constants.CONNECTION_TIME
 import com.example.movieapp.util.Constants.DEFAULT_PAGE_INDEX
 import com.example.movieapp.util.Constants.PAGE_SIZE
 import com.example.movieapp.util.Inflate
 import com.example.movieapp.util.string
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
+class MoviesFragment() :
+    BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
 
-
+    override var isActivityVm: Boolean = true
     override fun getVmClass(): Class<MoviesViewModel> = MoviesViewModel::class.java
     override fun inflateFragment(): Inflate<MoviesFragmentBinding> = MoviesFragmentBinding::inflate
 
     private val movieAdapter by lazy { MovieAdapter() }
-
     override fun onBindViewModel(viewModel: MoviesViewModel) {
-        getMovies(viewModel)
+        viewModel.getMovies()
         observeResult(viewModel)
         setChipsValue(viewModel)
-        observeNetworkConnection(viewModel)
         chipSelect(viewModel)
         getScreenOrientationInfo(viewModel)
         initRecycleView(viewModel)
@@ -59,9 +56,9 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
                     movieAdapter.submitList(state.data)
                 }
                 if (state.error != null) {
-                    createSnackBar(state.error, length = Snackbar.LENGTH_LONG) {
-                        snackAction(textColor = Color.RED, action = getString(string.retry)) {
-                            getMovies(viewModel)
+                    createSnackBar(state.error, length = Snackbar.LENGTH_INDEFINITE) {
+                        snackAction(textColor = Color.RED, action = getString(string.go_to_saved)) {
+                            viewModel.setChipState(ChipState.Saved)
                         }
                     }
                 }
@@ -70,43 +67,33 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
     }
 
     private fun initRecycleView(viewModel: MoviesViewModel) {
+        movieAdapter.stateRestorationPolicy =
+            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         observeData(viewModel.isLandscape) { isLandScape ->
+
+            val lm = if (isLandScape) GridLayoutManager(
+                requireContext(),
+                LANDSCAPE_SPAN_COUNT
+            ) else GridLayoutManager(
+                requireContext(),
+                PORTRAIT_SPAN_COUNT
+            )
+
             with(binding.rvMovies) {
-                layoutManager =
-                    if (isLandScape) GridLayoutManager(
-                        requireContext(),
-                        LANDSCAPE_SPAN_COUNT
-                    ) else GridLayoutManager(
-                        requireContext(),
-                        PORTRAIT_SPAN_COUNT
-                    )
+                layoutManager = lm
                 adapter = movieAdapter
                 addOnScrollListener(
                     OnScrollListener(
-                        { getMovies(viewModel) },
+                        { viewModel.getMovies() },
                         viewModel.isLastPage,
-                        PAGE_SIZE
+                        PAGE_SIZE,
+                        lm
                     )
                 )
             }
+
         }
 
-    }
-
-    private fun observeNetworkConnection(viewModel: MoviesViewModel) {
-        viewModel.connectionChecker.observe(viewLifecycleOwner, {
-            viewModel.setInternetConnection(it)
-            getMovies(viewModel)
-        })
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.hasInternetConnection.collectLatest {
-                delay(CONNECTION_TIME)
-                if (it == null) {
-                    viewModel.setInternetConnection(false)
-                    getMovies(viewModel)
-                }
-            }
-        }
     }
 
     private fun setChipsValue(viewModel: MoviesViewModel) {
@@ -151,42 +138,16 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MoviesViewModel>() {
             }
     }
 
-    private fun getMovies(viewModel: MoviesViewModel) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.hasInternetConnection.collectLatest { hasInternet ->
-                when (hasInternet) {
-                    true -> {
-                        binding.progressBar.hide()
-                        viewModel.getMovies()
-                    }
-                    null -> {
-                        binding.progressBar.show()
-                        observeNetworkConnection(viewModel)
-                    }
-                    false -> {
-                        binding.progressBar.hide()
-                        createSnackBar(
-                            getString(string.no_internet),
-                            length = Snackbar.LENGTH_INDEFINITE
-                        ) {
-                            snackAction(
-                                textColor = Color.RED,
-                                action = getString(string.go_to_saved)
-                            ) {
-                                viewModel.setChipState(ChipState.Saved)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-
     override fun setListeners() {
         movieAdapter.onPosterClick = { movie ->
-            val action = MoviesFragmentDirections.actionMoviesFragmentToMovieDetailFragment(movie)
-            findNavController().navigate(action)
+            with(findNavController()) {
+                if (currentDestination?.id == R.id.moviesFragment) {
+                    val action =
+                        MoviesFragmentDirections.actionMoviesFragmentToMovieDetailFragment(movie)
+                    navigate(action)
+                }
+            }
+
         }
     }
 
